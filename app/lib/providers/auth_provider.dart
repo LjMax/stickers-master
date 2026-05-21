@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -125,6 +126,30 @@ class AuthService {
     } catch (_) {
       // Best-effort — Google sign-out can fail without affecting Firebase.
     }
+  }
+
+  /// Permanently delete the current user's account and all of their data.
+  ///
+  /// Invokes the `deleteAccount` Cloud Function, which erases the user's
+  /// Firestore data across every collection and then deletes their Firebase
+  /// Auth account. The function is pinned to europe-west3 (the Firestore
+  /// region), so the client must target that region explicitly.
+  ///
+  /// Once the server has deleted the Auth user, the local session is stale.
+  /// We sign out and start a fresh anonymous session so the app stays
+  /// usable as a guest without needing a restart. Throws on failure — the
+  /// caller should surface an error and leave the account intact.
+  Future<void> deleteAccount() async {
+    final functions = FirebaseFunctions.instanceFor(region: 'europe-west3');
+    await functions.httpsCallable('deleteAccount').call();
+
+    await _auth.signOut();
+    try {
+      await GoogleSignIn().signOut();
+    } catch (_) {
+      // Best-effort.
+    }
+    await _auth.signInAnonymously();
   }
 }
 

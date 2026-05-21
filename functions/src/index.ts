@@ -13,10 +13,12 @@
  */
 
 import { initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { getMessaging, MulticastMessage } from "firebase-admin/messaging";
 import { logger } from "firebase-functions";
 import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 
 initializeApp();
 
@@ -207,5 +209,83 @@ export const onMessageCreated = onDocumentCreated(
         sender_id: senderId,
       },
     });
+  }
+);
+
+// ---------------------------------------------------------------------------
+// Account deletion
+// ---------------------------------------------------------------------------
+
+/**
+ * Callable: permanently deletes the calling user's account and every piece
+ * of their data, then deletes the Firebase Auth user. Irreversible.
+ *
+ * Chats the user took part in are deleted whole — the other participant
+ * loses the conversation too. Abuse reports are intentionally NOT deleted;
+ * the privacy policy reserves the right to keep them for safety.
+ *
+ * Pinned to europe-west3 to match the Firestore database region; the Flutter
+ * client must call it via FirebaseFunctions.instanceFor(region: ...).
+ */
+export const deleteAccount = onCall(
+  { region: "europe-west3" },
+  async (request) => {
+    const uid = request.auth?.uid;
+    if (!uid) {
+      throw new HttpsError(
+        "unauthenticated",
+        "You must be signed in to delete your account."
+      );
+    }
+
+    logger.info(`Account deletion requested for ${uid}.`);
+
+    try {
+      // 1. Private user subtree: collection counts + FCM token.
+      await db.recursiveDelete(db.doc(`users/${uid}`));
+
+      // 2. Public profile and its swap-index subcollection.
+      await db.recursiveDelete(db.doc(`public_profiles/${uid}`));
+
+      // 3. Chat requests this user sent or received.
+      for (const field of ["from_user", "to_user"]) {
+        const snap = await db
+          .collection("chat_requests")
+          .where(field, "==", uid)
+          .get();
+        await Promise.all(snap.docs.map((d) => d.ref.delete()));
+      }
+
+      // 4. Every chat the user took part in — the whole thread and all of
+      //    its messages.
+      const chatsSnap = await db
+        .collection("chats")
+        .where("participants", "array-contains", uid)
+        .get();
+      for (const chat of chatsSnap.docs) {
+        await db.recursiveDelete(chat.ref);
+      }
+
+      // 5. Block records in either direction.
+      for (const field of ["blocker", "blocked"]) {
+        const snap = await db
+          .collection("blocks")
+          .where(field, "==", uid)
+          .get();
+        await Promise.all(snap.docs.map((d) => d.ref.delete()));
+      }
+
+      // 6. Finally, the Auth account itself.
+      await getAuth().deleteUser(uid);
+
+      logger.info(`Account deletion complete for ${uid}.`);
+      return { ok: true };
+    } catch (e) {
+      logger.error(`Account deletion failed for ${uid}:`, e);
+      throw new HttpsError(
+        "internal",
+        "Account deletion failed. Please try again."
+      );
+    }
   }
 );

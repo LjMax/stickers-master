@@ -175,6 +175,15 @@
   "signOutConfirmTitle": "Sign out?",
   "signOutConfirmBody": "Your local collection stays. Cloud sync pauses until you sign back in.",
 
+  "settingsDeleteAccount": "Delete account",
+  "settingsDeleteAccountSubtitle": "Permanently remove your account and all data",
+  "deleteAccountTitle": "Delete your account?",
+  "deleteAccountBody": "This permanently deletes your account, your collection, your swap profile, and all of your chats and messages. Conversations will be removed for the people you chatted with too. This can't be undone.",
+  "deleteAccountConfirm": "Delete",
+  "deleteAccountProgress": "Deleting your account…",
+  "deleteAccountDone": "Your account and data have been deleted.",
+  "deleteAccountError": "Couldn't delete your account. Check your connection and try again.",
+
   "stickersOwnedOfTotal": "{owned} / {total} stickers",
   "@stickersOwnedOfTotal": {
     "placeholders": {

@@ -342,6 +342,33 @@ class AppLocalizationsSr extends AppLocalizations {
       'Tvoja lokalna kolekcija ostaje. Sinhronizacija sa cloud-om se zaustavlja dok se ponovo ne prijaviš.';
 
   @override
+  String get settingsDeleteAccount => 'Obriši nalog';
+
+  @override
+  String get settingsDeleteAccountSubtitle =>
+      'Trajno ukloni nalog i sve podatke';
+
+  @override
+  String get deleteAccountTitle => 'Obrisati nalog?';
+
+  @override
+  String get deleteAccountBody =>
+      'Ovim se trajno brišu tvoj nalog, tvoja kolekcija, profil za razmenu i sva tvoja ćaskanja i poruke. Razgovori će biti uklonjeni i kod osoba sa kojima si ćaskao. Ova radnja se ne može poništiti.';
+
+  @override
+  String get deleteAccountConfirm => 'Obriši';
+
+  @override
+  String get deleteAccountProgress => 'Brisanje naloga…';
+
+  @override
+  String get deleteAccountDone => 'Tvoj nalog i podaci su obrisani.';
+
+  @override
+  String get deleteAccountError =>
+      'Brisanje naloga nije uspelo. Proveri internet vezu i pokušaj ponovo.';
+
+  @override
   String stickersOwnedOfTotal(int owned, int total) {
     return '$owned / $total sličica';
   }

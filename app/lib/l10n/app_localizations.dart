@@ -680,6 +680,54 @@ abstract class AppLocalizations {
   /// **'Tvoja lokalna kolekcija ostaje. Sinhronizacija sa cloud-om se zaustavlja dok se ponovo ne prijaviš.'**
   String get signOutConfirmBody;
 
+  /// No description provided for @settingsDeleteAccount.
+  ///
+  /// In sr, this message translates to:
+  /// **'Obriši nalog'**
+  String get settingsDeleteAccount;
+
+  /// No description provided for @settingsDeleteAccountSubtitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Trajno ukloni nalog i sve podatke'**
+  String get settingsDeleteAccountSubtitle;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Obrisati nalog?'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountBody.
+  ///
+  /// In sr, this message translates to:
+  /// **'Ovim se trajno brišu tvoj nalog, tvoja kolekcija, profil za razmenu i sva tvoja ćaskanja i poruke. Razgovori će biti uklonjeni i kod osoba sa kojima si ćaskao. Ova radnja se ne može poništiti.'**
+  String get deleteAccountBody;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In sr, this message translates to:
+  /// **'Obriši'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @deleteAccountProgress.
+  ///
+  /// In sr, this message translates to:
+  /// **'Brisanje naloga…'**
+  String get deleteAccountProgress;
+
+  /// No description provided for @deleteAccountDone.
+  ///
+  /// In sr, this message translates to:
+  /// **'Tvoj nalog i podaci su obrisani.'**
+  String get deleteAccountDone;
+
+  /// No description provided for @deleteAccountError.
+  ///
+  /// In sr, this message translates to:
+  /// **'Brisanje naloga nije uspelo. Proveri internet vezu i pokušaj ponovo.'**
+  String get deleteAccountError;
+
   /// No description provided for @stickersOwnedOfTotal.
   ///
   /// In sr, this message translates to:

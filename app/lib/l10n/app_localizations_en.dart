@@ -342,6 +342,33 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your local collection stays. Cloud sync pauses until you sign back in.';
 
   @override
+  String get settingsDeleteAccount => 'Delete account';
+
+  @override
+  String get settingsDeleteAccountSubtitle =>
+      'Permanently remove your account and all data';
+
+  @override
+  String get deleteAccountTitle => 'Delete your account?';
+
+  @override
+  String get deleteAccountBody =>
+      'This permanently deletes your account, your collection, your swap profile, and all of your chats and messages. Conversations will be removed for the people you chatted with too. This can\'t be undone.';
+
+  @override
+  String get deleteAccountConfirm => 'Delete';
+
+  @override
+  String get deleteAccountProgress => 'Deleting your account…';
+
+  @override
+  String get deleteAccountDone => 'Your account and data have been deleted.';
+
+  @override
+  String get deleteAccountError =>
+      'Couldn\'t delete your account. Check your connection and try again.';
+
+  @override
   String stickersOwnedOfTotal(int owned, int total) {
     return '$owned / $total stickers';
   }

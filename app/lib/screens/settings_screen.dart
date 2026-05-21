@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../main.dart' show firebaseReadyProvider;
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
+import '../providers/preferences_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/user_avatar.dart';
@@ -69,6 +70,19 @@ class SettingsScreen extends ConsumerWidget {
                   builder: (_) => const BlockedUsersScreen(),
                 ),
               ),
+            ),
+          if (user != null && firebaseReady && !user.isAnonymous)
+            ListTile(
+              leading: Icon(
+                Icons.delete_forever_outlined,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              title: Text(
+                l.settingsDeleteAccount,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+              subtitle: Text(l.settingsDeleteAccountSubtitle),
+              onTap: () => _confirmDeleteAccount(context, ref, l),
             ),
           const Divider(),
           _SectionHeader(label: l.settingsLanguage),
@@ -223,5 +237,68 @@ class _SectionHeader extends StatelessWidget {
             ),
       ),
     );
+  }
+}
+
+/// Confirmation + progress flow for permanently deleting the signed-in
+/// user's account. Shows a destructive confirm dialog, then a blocking
+/// progress dialog while the `deleteAccount` Cloud Function runs, then
+/// clears all local data. On success the user is left as a fresh anonymous
+/// guest; on failure the account is untouched and an error is shown.
+Future<void> _confirmDeleteAccount(
+  BuildContext context,
+  WidgetRef ref,
+  AppLocalizations l,
+) async {
+  final messenger = ScaffoldMessenger.of(context);
+
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l.deleteAccountTitle),
+      content: Text(l.deleteAccountBody),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: Text(l.actionCancel),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(ctx).colorScheme.error,
+          ),
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: Text(l.deleteAccountConfirm),
+        ),
+      ],
+    ),
+  );
+  if (confirmed != true || !context.mounted) return;
+
+  showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (ctx) => AlertDialog(
+      content: Row(
+        children: [
+          const SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2.5),
+          ),
+          const SizedBox(width: 20),
+          Expanded(child: Text(l.deleteAccountProgress)),
+        ],
+      ),
+    ),
+  );
+
+  try {
+    await ref.read(authServiceProvider).deleteAccount();
+    await ref.read(sharedPreferencesProvider).clear();
+    if (context.mounted) Navigator.of(context).pop(); // dismiss progress
+    messenger.showSnackBar(SnackBar(content: Text(l.deleteAccountDone)));
+  } catch (_) {
+    if (context.mounted) Navigator.of(context).pop(); // dismiss progress
+    messenger.showSnackBar(SnackBar(content: Text(l.deleteAccountError)));
   }
 }

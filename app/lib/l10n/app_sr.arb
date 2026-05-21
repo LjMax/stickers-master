@@ -262,6 +262,23 @@
   "signOutConfirmBody": "Tvoja lokalna kolekcija ostaje. Sinhronizacija sa cloud-om se zaustavlja dok se ponovo ne prijaviš.",
   "@signOutConfirmBody": {},
 
+  "settingsDeleteAccount": "Obriši nalog",
+  "@settingsDeleteAccount": {},
+  "settingsDeleteAccountSubtitle": "Trajno ukloni nalog i sve podatke",
+  "@settingsDeleteAccountSubtitle": {},
+  "deleteAccountTitle": "Obrisati nalog?",
+  "@deleteAccountTitle": {},
+  "deleteAccountBody": "Ovim se trajno brišu tvoj nalog, tvoja kolekcija, profil za razmenu i sva tvoja ćaskanja i poruke. Razgovori će biti uklonjeni i kod osoba sa kojima si ćaskao. Ova radnja se ne može poništiti.",
+  "@deleteAccountBody": {},
+  "deleteAccountConfirm": "Obriši",
+  "@deleteAccountConfirm": {},
+  "deleteAccountProgress": "Brisanje naloga…",
+  "@deleteAccountProgress": {},
+  "deleteAccountDone": "Tvoj nalog i podaci su obrisani.",
+  "@deleteAccountDone": {},
+  "deleteAccountError": "Brisanje naloga nije uspelo. Proveri internet vezu i pokušaj ponovo.",
+  "@deleteAccountError": {},
+
   "stickersOwnedOfTotal": "{owned} / {total} sličica",
   "@stickersOwnedOfTotal": {
     "placeholders": {
