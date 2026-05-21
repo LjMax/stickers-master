@@ -6,6 +6,8 @@ import '../models/album.dart';
 import '../models/sticker.dart';
 import '../providers/collection_provider.dart';
 import '../providers/locale_provider.dart';
+import '../theme/app_theme.dart';
+import '../widgets/empty_state.dart';
 import 'sticker_edit_sheet.dart';
 
 /// Full-screen search for stickers by their code. Type "ENG" to see all
@@ -64,13 +66,9 @@ class _SearchResults extends ConsumerWidget {
         album.stickers.where((s) => s.code.toUpperCase().contains(query)).toList();
 
     if (results.isEmpty) {
-      return Center(
-        child: Text(
-          l.searchNoResults,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-        ),
+      return EmptyState(
+        icon: Icons.search_off,
+        title: l.searchNoResults,
       );
     }
 
@@ -136,7 +134,7 @@ class _ResultTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: sticker.isSpecial
-            ? const Color(0xFFC9A227)
+            ? AppColors.foilGold
             : Theme.of(context).colorScheme.primaryContainer,
         foregroundColor: sticker.isSpecial
             ? Colors.white

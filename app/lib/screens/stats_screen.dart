@@ -8,6 +8,7 @@ import '../providers/album_provider.dart';
 import '../providers/collection_provider.dart';
 import '../providers/locale_provider.dart';
 import '../repositories/share_list.dart';
+import '../theme/app_theme.dart';
 
 /// Per-group breakdown of progress + share-list export.
 class StatsScreen extends ConsumerWidget {
@@ -84,7 +85,7 @@ class StatsScreen extends ConsumerWidget {
                       )
                     : const CircleAvatar(
                         radius: 14,
-                        backgroundColor: Color(0xFFC9A227),
+                        backgroundColor: AppColors.foilGold,
                         foregroundColor: Colors.white,
                         child: Icon(Icons.star, size: 14),
                       ),

@@ -214,6 +214,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchHint => 'Search by code (e.g. ENG12)';
 
   @override
+  String get albumFilterEmpty => 'No stickers match this filter';
+
+  @override
   String get searchNoResults => 'No results';
 
   @override

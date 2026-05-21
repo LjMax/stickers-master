@@ -458,6 +458,12 @@ abstract class AppLocalizations {
   /// **'Pretraži po šifri (npr. ENG12)'**
   String get searchHint;
 
+  /// No description provided for @albumFilterEmpty.
+  ///
+  /// In sr, this message translates to:
+  /// **'Nijedna sličica ne odgovara filteru'**
+  String get albumFilterEmpty;
+
   /// No description provided for @searchNoResults.
   ///
   /// In sr, this message translates to:

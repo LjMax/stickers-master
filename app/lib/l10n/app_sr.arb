@@ -157,6 +157,8 @@
 
   "searchHint": "Pretraži po šifri (npr. ENG12)",
   "@searchHint": {},
+  "albumFilterEmpty": "Nijedna sličica ne odgovara filteru",
+  "@albumFilterEmpty": {},
   "searchNoResults": "Nema rezultata",
   "@searchNoResults": {},
   "searchResultCount": "{count} rezultata",

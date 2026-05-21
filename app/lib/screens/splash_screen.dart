@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_shell.dart';
+import '../theme/app_theme.dart';
 
 /// Branded launch screen — the album-page logo and tagline on the brand
 /// blue. Shown briefly on cold start, then fades into the main app.
@@ -17,7 +18,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  static const _brandBlue = Color(0xFF1565C0);
+  static const _brandBlue = AppColors.brandBlue;
 
   @override
   void initState() {

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/app_theme.dart';
+
 /// Circular avatar that:
 /// - Treats `null` AND empty-string photo URLs the same way (shows the
 ///   letter fallback) — silently empty URLs from Firebase Auth are a
@@ -34,7 +36,7 @@ class UserAvatar extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final bg = backgroundColor ??
         (foilHighlight
-            ? const Color(0xFFC9A227)
+            ? AppColors.foilGold
             : scheme.primaryContainer);
     final fg = foregroundColor ??
         (foilHighlight ? Colors.white : scheme.onPrimaryContainer);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/sticker.dart';
+import '../theme/app_theme.dart';
 
 /// A compact tile showing the sticker [code] with a visual treatment for
 /// its current owned_count. No images — just the code.
@@ -33,7 +34,7 @@ class StickerTile extends StatelessWidget {
     final fillColor = isOwned ? scheme.primaryContainer : scheme.surface;
     final textColor = isOwned ? scheme.onPrimaryContainer : scheme.onSurfaceVariant;
     final borderColor = sticker.isSpecial
-        ? const Color(0xFFC9A227) // gold for foils
+        ? AppColors.foilGold // gold for foils
         : (isOwned ? scheme.primary : scheme.outlineVariant);
 
     return Material(

@@ -8,6 +8,7 @@ import '../providers/auth_provider.dart';
 import '../providers/moderation_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/swap_provider.dart';
+import '../widgets/empty_state.dart';
 import '../widgets/moderation_dialogs.dart';
 import '../widgets/user_avatar.dart';
 import 'chat/send_request_dialog.dart';
@@ -70,11 +71,13 @@ class _EmptyState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
-    String message;
+    var icon = Icons.swap_horiz;
+    var message = '';
     Widget? action;
 
     switch (reason) {
       case SwapMatchesReason.notSignedIn:
+        icon = Icons.lock_outline;
         message = l.swapEmptyNotSignedIn;
         action = FilledButton.tonalIcon(
           onPressed: () => Navigator.of(context).push(
@@ -85,6 +88,7 @@ class _EmptyState extends ConsumerWidget {
         );
         break;
       case SwapMatchesReason.noCitySet:
+        icon = Icons.location_off_outlined;
         message = l.swapEmptyNoCity;
         action = FilledButton.tonalIcon(
           onPressed: () => Navigator.of(context).push(
@@ -95,37 +99,24 @@ class _EmptyState extends ConsumerWidget {
         );
         break;
       case SwapMatchesReason.noMissing:
+        icon = Icons.check_circle_outline;
         message = l.swapEmptyNoMissing;
         break;
       case SwapMatchesReason.noMatches:
+        icon = Icons.swap_horiz;
         final profile = ref.watch(myProfileProvider).valueOrNull;
         message = l.swapEmptyNoMatches(profile?.city ?? '');
         break;
       case SwapMatchesReason.ok:
-        message = '';
         break;
     }
 
     return ListView(
-      // ListView so pull-to-refresh works even in empty state
+      // ListView so pull-to-refresh works even in the empty state.
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
       children: [
-        Icon(
-          Icons.swap_horiz,
-          size: 56,
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          message,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        if (action != null) ...[
-          const SizedBox(height: 20),
-          Center(child: action),
-        ],
+        const SizedBox(height: 48),
+        EmptyState(icon: icon, title: message, action: action),
       ],
     );
   }

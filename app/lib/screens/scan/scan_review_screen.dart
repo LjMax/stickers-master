@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/sticker.dart';
 import '../../providers/collection_provider.dart';
 import '../../providers/locale_provider.dart';
+import '../../theme/app_theme.dart';
 
 /// Bulk-mark screen. Shows the captured photo at the top and a 20-row
 /// checkbox list below. The user eyeballs the photo and ticks the stickers
@@ -124,7 +125,7 @@ class _ScanReviewScreenState extends ConsumerState<ScanReviewScreen> {
                         },
                   secondary: CircleAvatar(
                     backgroundColor: s.isSpecial
-                        ? const Color(0xFFC9A227)
+                        ? AppColors.foilGold
                         : Theme.of(context).colorScheme.primaryContainer,
                     foregroundColor: s.isSpecial
                         ? Colors.white

@@ -9,6 +9,7 @@ import '../providers/collapse_provider.dart';
 import '../providers/collection_provider.dart';
 import '../providers/filter_provider.dart';
 import '../widgets/collapsible_header.dart';
+import '../widgets/empty_state.dart';
 import '../widgets/filter_chip_row.dart';
 import '../widgets/group_section.dart';
 import 'sticker_search.dart';
@@ -66,41 +67,61 @@ class _AlbumBody extends ConsumerWidget {
     final collapseN =
         ref.read(collapsedSectionsProvider(album.id).notifier);
     final filter = ref.watch(albumFilterProvider);
+    final l = AppLocalizations.of(context);
 
     final groups = album.stickersByGroup;
     final specials = groups['FWC'] ?? const <Sticker>[];
 
+    // Whether any sticker at all survives the active filter. When nothing
+    // matches, every section collapses to nothing — so we show a single
+    // album-level empty state instead of a blank screen.
+    final anyVisible = album.stickers.any(
+      (s) => filter.matches(
+        isSpecial: s.isSpecial,
+        ownedCount: counts[s.code] ?? 0,
+      ),
+    );
+
     final slivers = <Widget>[
       SliverToBoxAdapter(child: _ProgressCard(album: album, counts: counts)),
       const SliverToBoxAdapter(child: FilterChipRow()),
-
-      // FWC specials section.
-      SliverToBoxAdapter(
-        child: _SpecialsSection(
-          albumId: album.id,
-          stickers: specials,
-          counts: counts,
-          filter: filter,
-          collapsed: collapsed.contains('specials'),
-          onToggle: () => collapseN.toggle('specials'),
-        ),
-      ),
-
-      // WC groups A → L.
-      for (final wcg in album.wcGroups)
+      if (!anyVisible)
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: EmptyState(
+            icon: Icons.filter_alt_off_outlined,
+            title: l.albumFilterEmpty,
+          ),
+        )
+      else ...[
+        // FWC specials section.
         SliverToBoxAdapter(
-          child: _WcGroupBlock(
+          child: _SpecialsSection(
             albumId: album.id,
-            wcGroup: wcg,
-            stickersByTeam: groups,
+            stickers: specials,
             counts: counts,
             filter: filter,
-            collapsed: collapsed.contains('wc:${wcg.letter}'),
-            onToggle: () => collapseN.toggle('wc:${wcg.letter}'),
+            collapsed: collapsed.contains('specials'),
+            onToggle: () => collapseN.toggle('specials'),
           ),
         ),
 
-      const SliverToBoxAdapter(child: SizedBox(height: 32)),
+        // WC groups A → L.
+        for (final wcg in album.wcGroups)
+          SliverToBoxAdapter(
+            child: _WcGroupBlock(
+              albumId: album.id,
+              wcGroup: wcg,
+              stickersByTeam: groups,
+              counts: counts,
+              filter: filter,
+              collapsed: collapsed.contains('wc:${wcg.letter}'),
+              onToggle: () => collapseN.toggle('wc:${wcg.letter}'),
+            ),
+          ),
+
+        const SliverToBoxAdapter(child: SizedBox(height: 32)),
+      ],
     ];
 
     return CustomScrollView(slivers: slivers);

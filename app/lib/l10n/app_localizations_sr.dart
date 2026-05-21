@@ -213,6 +213,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get searchHint => 'Pretraži po šifri (npr. ENG12)';
 
   @override
+  String get albumFilterEmpty => 'Nijedna sličica ne odgovara filteru';
+
+  @override
   String get searchNoResults => 'Nema rezultata';
 
   @override

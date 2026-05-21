@@ -8,6 +8,7 @@ import '../../models/chat_models.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../providers/moderation_provider.dart';
+import '../../widgets/empty_state.dart';
 import '../../widgets/user_avatar.dart';
 import 'chat_detail_screen.dart';
 
@@ -23,9 +24,9 @@ class InboxScreen extends ConsumerWidget {
     if (user == null) {
       return Scaffold(
         appBar: AppBar(title: Text(l.inboxTitle)),
-        body: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Center(child: Text(l.inboxEmptyNotSignedIn, textAlign: TextAlign.center)),
+        body: EmptyState(
+          icon: Icons.lock_outline,
+          title: l.inboxEmptyNotSignedIn,
         ),
       );
     }
@@ -77,9 +78,10 @@ class InboxScreen extends ConsumerWidget {
               // yet" looking clean.
               debugPrint('inbox: chats error: $e');
               return Padding(
-                padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
-                child: Center(
-                  child: Text(l.inboxEmpty, textAlign: TextAlign.center),
+                padding: const EdgeInsets.only(top: 64),
+                child: EmptyState(
+                  icon: Icons.forum_outlined,
+                  title: l.inboxEmpty,
                 ),
               );
             },
@@ -94,8 +96,11 @@ class InboxScreen extends ConsumerWidget {
                       .toList();
               if (visibleChats.isEmpty && visiblePending.isEmpty) {
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
-                  child: Center(child: Text(l.inboxEmpty, textAlign: TextAlign.center)),
+                  padding: const EdgeInsets.only(top: 64),
+                  child: EmptyState(
+                    icon: Icons.forum_outlined,
+                    title: l.inboxEmpty,
+                  ),
                 );
               }
               if (visibleChats.isEmpty) return const SizedBox.shrink();
