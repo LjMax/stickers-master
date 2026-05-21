@@ -1,0 +1,70 @@
+# Flutter / Dart
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.packages
+app/.pub-cache/
+app/.pub/
+app/build/
+app/.idea/
+app/*.iml
+app/.gradle/
+app/local.properties
+app/android/local.properties
+app/android/.gradle/
+app/android/captures/
+app/android/gradlew
+app/android/gradlew.bat
+app/android/gradle/wrapper/gradle-wrapper.jar
+app/ios/Pods/
+app/ios/Flutter/Flutter.framework
+app/ios/Flutter/Flutter.podspec
+app/ios/Flutter/flutter_export_environment.sh
+app/ios/Runner.xcworkspace/xcuserdata/
+app/ios/Runner.xcodeproj/xcuserdata/
+app/.flutter-plugins
+app/coverage/
+app/pubspec.lock
+
+# Firebase config (project-identifying / generated — kept local only)
+app/lib/firebase_options.dart
+app/android/app/google-services.json
+app/ios/Runner/GoogleService-Info.plist
+app/firebase.json
+.firebaserc
+app/firebase-debug.log
+firebase-debug.log
+.firebase/
+
+# Internal docs — planning, setup and agent context, kept local only
+CLAUDE.md
+PLAN.md
+SCAN_PLAN.md
+SETUP.md
+FIREBASE_SETUP.md
+CLOUD_FUNCTIONS_DEPLOY.md
+app/FIRST_RUN.md
+
+# Cloud Functions build artifacts
+functions/node_modules/
+functions/lib/
+functions/.env
+functions/.env.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Logs
+*.log

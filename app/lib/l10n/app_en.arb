@@ -1,0 +1,266 @@
+{
+  "@@locale": "en",
+  "appTitle": "Stickers Master",
+
+  "tabAlbum": "Album",
+  "tabStats": "Stats",
+  "tabSwap": "Swap",
+  "tabInbox": "Inbox",
+  "tabSettings": "Settings",
+
+  "requestDialogTitle": "Send a message — {name}",
+  "@requestDialogTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "requestDialogHint": "Short intro (e.g. \"Hi, I see you have ENG2 which I need\")",
+  "requestDialogSend": "Send",
+  "requestDialogCancel": "Cancel",
+  "requestDialogCharsLeft": "{count} left",
+  "@requestDialogCharsLeft": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "requestSent": "Request sent",
+  "requestSignInRequired": "Sign in to send a message",
+
+  "inboxTitle": "Inbox",
+  "inboxSectionRequests": "New requests",
+  "inboxSectionChats": "Active chats",
+  "inboxEmpty": "No new messages or chats.",
+  "inboxEmptyNotSignedIn": "Sign in to see messages from other collectors.",
+  "inboxRequestAccept": "Accept",
+  "inboxRequestDecline": "Decline",
+  "inboxRequestDeclined": "Request declined",
+  "chatNoLastMessage": "No messages yet",
+
+  "chatInputHint": "Write a message…",
+  "chatInputSend": "Send",
+
+  "profileTitle": "My profile",
+  "profileSettingsEntry": "My profile",
+  "profileSettingsSubtitleSet": "{name} · {city}",
+  "@profileSettingsSubtitleSet": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "city": { "type": "String" }
+    }
+  },
+  "profileSettingsSubtitleUnset": "Set your city for swap matches",
+  "profileDisplayName": "Name",
+  "profileDisplayNameHint": "How other collectors see you",
+  "profileCity": "City",
+  "profileCityHint": "e.g. Belgrade",
+  "profileCountry": "Country",
+  "profileCountryHint": "e.g. Serbia",
+  "profileSave": "Save",
+  "profileSaved": "Profile saved",
+  "profileRequiredField": "Required",
+  "profileSignInPrompt": "Sign in to set your profile and swap with others.",
+
+  "swapTitle": "Swap",
+  "swapEmptyNotSignedIn": "Sign in to see who can help with your missing stickers.",
+  "swapEmptyNoCity": "Set your city in profile to find collectors near you.",
+  "swapEmptyNoMissing": "All stickers are in your collection — nice work!",
+  "swapEmptyNoMatches": "No matches in {city} right now. Check back later.",
+  "@swapEmptyNoMatches": {
+    "placeholders": {
+      "city": { "type": "String" }
+    }
+  },
+  "swapOpenProfile": "Open profile",
+  "swapMatchCount": "{count, plural, one{{count} sticker for you} other{{count} stickers for you}}",
+  "@swapMatchCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "swapChat": "Message",
+  "swapChatComingSoon": "Live chat is coming soon — we're working on it.",
+  "swapRefresh": "Refresh",
+  "swapAnonymous": "Anonymous collector",
+
+  "albumPaniniFifa2026": "Panini FIFA World Cup 2026",
+
+  "wcGroupHeader": "Group {letter}",
+  "@wcGroupHeader": {
+    "placeholders": {
+      "letter": { "type": "String" }
+    }
+  },
+  "sectionSpecials": "Special stickers",
+  "sectionCollapse": "Collapse",
+  "sectionExpand": "Expand",
+
+  "filterAll": "All",
+  "filterMissing": "Missing",
+  "filterHave": "Have",
+  "filterDuplicates": "Duplicates",
+  "filterFoils": "Foils",
+
+  "searchHint": "Search by code (e.g. ENG12)",
+  "searchNoResults": "No results",
+  "searchResultCount": "{count} results",
+  "@searchResultCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "shareTitle": "Swap list",
+  "shareWanted": "WANTED",
+  "shareOffered": "OFFERED",
+  "shareCopy": "Copy to clipboard",
+  "shareCopied": "List copied to clipboard",
+  "shareOpenSheet": "Share list",
+  "shareEmpty": "No duplicates or missing stickers",
+  "shareHeader": "Stickers Master — {album}",
+  "@shareHeader": {
+    "placeholders": {
+      "album": { "type": "String" }
+    }
+  },
+  "shareProgress": "Status: {owned} / {total} ({percent}%)",
+  "@shareProgress": {
+    "placeholders": {
+      "owned": { "type": "int" },
+      "total": { "type": "int" },
+      "percent": { "type": "String" }
+    }
+  },
+
+  "scanPageTooltip": "Scan page",
+  "scanReviewTitle": "Page review — {team}",
+  "@scanReviewTitle": {
+    "placeholders": {
+      "team": { "type": "String" }
+    }
+  },
+  "scanBulkInstructions": "Look at the photo and tick the stickers you've placed on this page. Already-owned ones are locked.",
+  "scanSelectAllEmpty": "Select all empty",
+  "scanClearAll": "Clear selection",
+  "scanRetake": "Retake photo",
+  "scanApply": "Save",
+  "scanCancelled": "Scan cancelled",
+  "scanAppliedCount": "Added {count} stickers to your collection",
+  "@scanAppliedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanNothingChanged": "No stickers selected",
+  "scanCameraError": "Couldn't open the camera: {message}",
+  "@scanCameraError": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+
+  "settingsAccount": "Account",
+  "accountGuest": "Guest",
+  "accountGuestSubtitle": "Sign in to sync your collection and swap with others.",
+  "accountSignedIn": "Signed in",
+  "accountSignedOut": "Not signed in",
+  "accountFirebaseUnconfiguredTitle": "Firebase isn't configured",
+  "accountFirebaseUnconfiguredBody": "Run `flutterfire configure` in the app/ directory to connect a Firebase project.",
+
+  "signInTitle": "Sign in",
+  "signInSubtitle": "Sign in to sync your collection across devices and swap with other collectors.",
+  "signInGoogle": "Sign in with Google",
+  "signInGuest": "Continue as guest",
+  "signInComingSoon": "Email and phone sign-in coming soon.",
+  "signOut": "Sign out",
+  "signOutConfirmTitle": "Sign out?",
+  "signOutConfirmBody": "Your local collection stays. Cloud sync pauses until you sign back in.",
+
+  "stickersOwnedOfTotal": "{owned} / {total} stickers",
+  "@stickersOwnedOfTotal": {
+    "placeholders": {
+      "owned": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "stickersOwnedPercent": "{percent}% complete",
+  "@stickersOwnedPercent": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+
+  "statusHave": "Have",
+  "statusDuplicate": "Duplicate",
+  "statusMissing": "Missing",
+  "statusFoil": "Foil",
+
+  "duplicatesShort": "x{count}",
+  "@duplicatesShort": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "settingsLanguage": "Language",
+  "settingsLanguageSerbian": "Serbian (Latin)",
+  "settingsLanguageEnglish": "English",
+  "settingsTheme": "Theme",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsAbout": "About",
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+
+  "stickerEditTitle": "Sticker {code}",
+  "@stickerEditTitle": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "stickerEditOwnedCount": "How many do you have?",
+  "stickerEditNone": "None",
+  "stickerEditHaveOne": "Have one",
+  "stickerEditDuplicates": "{count} duplicates",
+  "@stickerEditDuplicates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "actionDone": "Done",
+  "actionCancel": "Cancel",
+  "actionReset": "Reset",
+
+  "modBlock": "Block",
+  "modBlockUser": "Block user",
+  "modUnblock": "Unblock",
+  "modUnblockUser": "Unblock user",
+  "modReport": "Report",
+  "modReportUser": "Report user",
+  "modBlockConfirmTitle": "Block {name}?",
+  "modBlockConfirmBody": "You won't see their messages or chat requests anymore, and they won't appear in the swap area. You can unblock them later in Settings.",
+  "modBlockedSnack": "{name} blocked.",
+  "modUnblockedSnack": "{name} unblocked.",
+  "modReportTitle": "Report {name}",
+  "modReportReasonLabel": "Reason for report",
+  "modReportReasonSpam": "Spam",
+  "modReportReasonHarassment": "Harassment or abuse",
+  "modReportReasonInappropriate": "Inappropriate content",
+  "modReportReasonOther": "Other",
+  "modReportDetailsHint": "Additional details (optional)",
+  "modReportSubmit": "Submit report",
+  "modReportSentSnack": "Report submitted. Thanks for helping keep the community safe.",
+  "modBlockedUsersTitle": "Blocked users",
+  "modBlockedUsersEmpty": "You haven't blocked anyone.",
+  "modBlockedUsersSubtitle": "Manage blocked users",
+  "requestCooldownActive": "This person recently declined a request. Try again in {hours} h.",
+  "requestAlreadyPending": "You've already sent a request to this person. Wait for a reply.",
+  "actionDelete": "Delete",
+  "chatDeleteTitle": "Delete chat?",
+  "chatDeleteBody": "The chat will be removed from your list. It reappears if a new message arrives.",
+  "chatDeletedSnack": "Chat removed."
+}

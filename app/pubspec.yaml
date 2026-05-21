@@ -1,0 +1,86 @@
+name: stickers_master
+description: "Sticker album collection tracker — Panini FIFA World Cup 2026 and beyond."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # Navigation
+  go_router: ^14.6.2
+
+  # Localization helpers
+  intl: any
+
+  # Persistence (lightweight for Phase 1; Drift comes in Phase 2)
+  shared_preferences: ^2.3.3
+
+  # Page scan feature (bulk-mark with photo reference; OCR removed in v1.4
+  # because ML Kit couldn't reliably read Panini's stylized slot labels).
+  image_picker: ^1.1.2                       # opens system camera, returns image file
+
+  # Share sheet (Stats screen → "Podeli listu" / Share list)
+  share_plus: ^10.1.4                        # opens native Android/iOS share sheet
+
+  # Phase 2: cloud sync + auth
+  firebase_core: ^3.6.0                      # required to initialize Firebase
+  firebase_auth: ^5.3.1                      # auth (anonymous, google, email, phone)
+  cloud_firestore: ^5.4.4                    # collection sync
+  google_sign_in: ^6.2.1                     # Google Sign-In flow
+
+  # Phase 3.2: push notifications
+  firebase_messaging: ^15.1.3                # FCM client (Android + iOS later)
+  flutter_local_notifications: ^17.2.3       # foreground-state notification display
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  # Branding asset generators (run once, not part of the app runtime).
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
+
+flutter:
+  uses-material-design: true
+  generate: true      # enables flutter gen-l10n for ARB-based localization
+  assets:
+    - assets/data/stickers.json
+    - assets/icon/splash.png
+
+# ---------------------------------------------------------------------------
+# Launcher icon generation — `dart run flutter_launcher_icons`
+# Generates the Android legacy mipmaps + adaptive icon (API 26+).
+# Android-only; iOS is deferred to Phase 5.
+# ---------------------------------------------------------------------------
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/icon_master.png"
+  adaptive_icon_background: "#1565C0"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  min_sdk_android: 21
+
+# ---------------------------------------------------------------------------
+# Splash screen generation — `dart run flutter_native_splash:create`
+# Solid Panini-blue background with the album-page logo centered.
+# ---------------------------------------------------------------------------
+flutter_native_splash:
+  color: "#1565C0"
+  image: assets/icon/splash.png
+  android: true
+  ios: false
+  android_12:
+    color: "#1565C0"
+    image: assets/icon/splash.png

@@ -1,0 +1,419 @@
+{
+  "@@locale": "sr",
+  "appTitle": "Stickers Master",
+  "@appTitle": {
+    "description": "Display name of the app"
+  },
+
+  "tabAlbum": "Album",
+  "@tabAlbum": {},
+  "tabStats": "Statistika",
+  "@tabStats": {},
+  "tabSwap": "Razmena",
+  "@tabSwap": {},
+  "tabInbox": "Poruke",
+  "@tabInbox": {},
+  "tabSettings": "Podešavanja",
+  "@tabSettings": {},
+
+  "requestDialogTitle": "Pošalji poruku — {name}",
+  "@requestDialogTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "requestDialogHint": "Kratka poruka (npr. \"Ćao, vidim da imaš ENG2 koji tražim\")",
+  "@requestDialogHint": {},
+  "requestDialogSend": "Pošalji",
+  "@requestDialogSend": {},
+  "requestDialogCancel": "Otkaži",
+  "@requestDialogCancel": {},
+  "requestDialogCharsLeft": "{count} preostalo",
+  "@requestDialogCharsLeft": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "requestSent": "Zahtev je poslat",
+  "@requestSent": {},
+  "requestSignInRequired": "Prijavi se da pošalješ poruku",
+  "@requestSignInRequired": {},
+
+  "inboxTitle": "Poruke",
+  "@inboxTitle": {},
+  "inboxSectionRequests": "Novi zahtevi",
+  "@inboxSectionRequests": {},
+  "inboxSectionChats": "Aktivni razgovori",
+  "@inboxSectionChats": {},
+  "inboxEmpty": "Nema novih poruka ili razgovora.",
+  "@inboxEmpty": {},
+  "inboxEmptyNotSignedIn": "Prijavi se da vidiš poruke od drugih kolekcionara.",
+  "@inboxEmptyNotSignedIn": {},
+  "inboxRequestAccept": "Prihvati",
+  "@inboxRequestAccept": {},
+  "inboxRequestDecline": "Odbij",
+  "@inboxRequestDecline": {},
+  "inboxRequestDeclined": "Zahtev je odbijen",
+  "@inboxRequestDeclined": {},
+  "chatNoLastMessage": "Bez poruka",
+  "@chatNoLastMessage": {},
+
+  "chatInputHint": "Napiši poruku…",
+  "@chatInputHint": {},
+  "chatInputSend": "Pošalji",
+  "@chatInputSend": {},
+
+  "profileTitle": "Moj profil",
+  "@profileTitle": {},
+  "profileSettingsEntry": "Moj profil",
+  "@profileSettingsEntry": {},
+  "profileSettingsSubtitleSet": "{name} · {city}",
+  "@profileSettingsSubtitleSet": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "city": { "type": "String" }
+    }
+  },
+  "profileSettingsSubtitleUnset": "Postavi grad za razmenu",
+  "@profileSettingsSubtitleUnset": {},
+  "profileDisplayName": "Ime",
+  "@profileDisplayName": {},
+  "profileDisplayNameHint": "Kako te drugi kolekcionari vide",
+  "@profileDisplayNameHint": {},
+  "profileCity": "Grad",
+  "@profileCity": {},
+  "profileCityHint": "npr. Beograd",
+  "@profileCityHint": {},
+  "profileCountry": "Država",
+  "@profileCountry": {},
+  "profileCountryHint": "npr. Srbija",
+  "@profileCountryHint": {},
+  "profileSave": "Sačuvaj",
+  "@profileSave": {},
+  "profileSaved": "Profil je sačuvan",
+  "@profileSaved": {},
+  "profileRequiredField": "Obavezno polje",
+  "@profileRequiredField": {},
+  "profileSignInPrompt": "Prijavi se da podesiš profil i razmenjuješ sa drugima.",
+  "@profileSignInPrompt": {},
+
+  "swapTitle": "Razmena",
+  "@swapTitle": {},
+  "swapEmptyNotSignedIn": "Prijavi se da vidiš ko može da ti pomogne sa nedostajućim sličicama.",
+  "@swapEmptyNotSignedIn": {},
+  "swapEmptyNoCity": "Postavi grad u svom profilu da pronađeš kolekcionare blizu tebe.",
+  "@swapEmptyNoCity": {},
+  "swapEmptyNoMissing": "Sve sličice su u kolekciji — bravo!",
+  "@swapEmptyNoMissing": {},
+  "swapEmptyNoMatches": "Trenutno nema podudaranja u {city}. Pokušaj kasnije.",
+  "@swapEmptyNoMatches": {
+    "placeholders": {
+      "city": { "type": "String" }
+    }
+  },
+  "swapOpenProfile": "Otvori profil",
+  "@swapOpenProfile": {},
+  "swapMatchCount": "{count, plural, one{{count} sličica za tebe} few{{count} sličice za tebe} other{{count} sličica za tebe}}",
+  "@swapMatchCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "swapChat": "Poruka",
+  "@swapChat": {},
+  "swapChatComingSoon": "Live chat stiže uskoro — radimo na njemu.",
+  "@swapChatComingSoon": {},
+  "swapRefresh": "Osveži",
+  "@swapRefresh": {},
+  "swapAnonymous": "Anonimni kolekcionar",
+  "@swapAnonymous": {},
+
+  "albumPaniniFifa2026": "Panini FIFA Svetsko prvenstvo 2026",
+  "@albumPaniniFifa2026": {},
+
+  "wcGroupHeader": "Grupa {letter}",
+  "@wcGroupHeader": {
+    "placeholders": {
+      "letter": { "type": "String" }
+    }
+  },
+  "sectionSpecials": "Specijalne sličice",
+  "@sectionSpecials": {},
+  "sectionCollapse": "Sakrij",
+  "@sectionCollapse": {},
+  "sectionExpand": "Prikaži",
+  "@sectionExpand": {},
+
+  "filterAll": "Sve",
+  "@filterAll": {},
+  "filterMissing": "Tražim",
+  "@filterMissing": {},
+  "filterHave": "Imam",
+  "@filterHave": {},
+  "filterDuplicates": "Duplikati",
+  "@filterDuplicates": {},
+  "filterFoils": "Foil",
+  "@filterFoils": {},
+
+  "searchHint": "Pretraži po šifri (npr. ENG12)",
+  "@searchHint": {},
+  "searchNoResults": "Nema rezultata",
+  "@searchNoResults": {},
+  "searchResultCount": "{count} rezultata",
+  "@searchResultCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "shareTitle": "Lista za razmenu",
+  "@shareTitle": {},
+  "shareWanted": "TRAŽIM",
+  "@shareWanted": {},
+  "shareOffered": "ZA ZAMENU",
+  "@shareOffered": {},
+  "shareCopy": "Kopiraj u clipboard",
+  "@shareCopy": {},
+  "shareCopied": "Lista je kopirana u clipboard",
+  "@shareCopied": {},
+  "shareOpenSheet": "Podeli listu",
+  "@shareOpenSheet": {},
+  "shareEmpty": "Nema duplikata niti nedostajućih sličica",
+  "@shareEmpty": {},
+  "shareHeader": "Stickers Master — {album}",
+  "@shareHeader": {
+    "placeholders": {
+      "album": { "type": "String" }
+    }
+  },
+  "shareProgress": "Stanje: {owned} / {total} ({percent}%)",
+  "@shareProgress": {
+    "placeholders": {
+      "owned": { "type": "int" },
+      "total": { "type": "int" },
+      "percent": { "type": "String" }
+    }
+  },
+
+  "scanPageTooltip": "Skeniraj stranicu",
+  "@scanPageTooltip": {},
+  "scanReviewTitle": "Pregled stranice — {team}",
+  "@scanReviewTitle": {
+    "placeholders": {
+      "team": { "type": "String" }
+    }
+  },
+  "scanBulkInstructions": "Gledaj sliku i označi sličice koje si dodao na ovu stranicu. Već unesene su zaključane.",
+  "@scanBulkInstructions": {},
+  "scanSelectAllEmpty": "Označi sve prazne",
+  "@scanSelectAllEmpty": {},
+  "scanClearAll": "Obriši izbor",
+  "@scanClearAll": {},
+  "scanRetake": "Ponovi snimanje",
+  "@scanRetake": {},
+  "scanApply": "Sačuvaj",
+  "@scanApply": {},
+  "scanCancelled": "Skeniranje je otkazano",
+  "@scanCancelled": {},
+  "scanAppliedCount": "Dodato {count} sličica u kolekciju",
+  "@scanAppliedCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanNothingChanged": "Nije izabrana ni jedna sličica",
+  "@scanNothingChanged": {},
+  "scanCameraError": "Greška pri otvaranju kamere: {message}",
+  "@scanCameraError": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+
+  "settingsAccount": "Nalog",
+  "@settingsAccount": {},
+  "accountGuest": "Gost",
+  "@accountGuest": {},
+  "accountGuestSubtitle": "Prijavi se da sinhronizuješ kolekciju i razmenjuješ.",
+  "@accountGuestSubtitle": {},
+  "accountSignedIn": "Prijavljen",
+  "@accountSignedIn": {},
+  "accountSignedOut": "Niko nije prijavljen",
+  "@accountSignedOut": {},
+  "accountFirebaseUnconfiguredTitle": "Firebase nije podešen",
+  "@accountFirebaseUnconfiguredTitle": {},
+  "accountFirebaseUnconfiguredBody": "Pokreni `flutterfire configure` u app/ folderu da povežeš Firebase projekat.",
+  "@accountFirebaseUnconfiguredBody": {},
+
+  "signInTitle": "Prijava",
+  "@signInTitle": {},
+  "signInSubtitle": "Prijavi se da sinhronizuješ kolekciju između uređaja i razmenjuješ sa drugim kolekcionarima.",
+  "@signInSubtitle": {},
+  "signInGoogle": "Prijavi se sa Google nalogom",
+  "@signInGoogle": {},
+  "signInGuest": "Nastavi kao gost",
+  "@signInGuest": {},
+  "signInComingSoon": "Prijava preko emaila i broja telefona — uskoro.",
+  "@signInComingSoon": {},
+  "signOut": "Odjavi se",
+  "@signOut": {},
+  "signOutConfirmTitle": "Odjava?",
+  "@signOutConfirmTitle": {},
+  "signOutConfirmBody": "Tvoja lokalna kolekcija ostaje. Sinhronizacija sa cloud-om se zaustavlja dok se ponovo ne prijaviš.",
+  "@signOutConfirmBody": {},
+
+  "stickersOwnedOfTotal": "{owned} / {total} sličica",
+  "@stickersOwnedOfTotal": {
+    "placeholders": {
+      "owned": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "stickersOwnedPercent": "{percent}% kompletirano",
+  "@stickersOwnedPercent": {
+    "placeholders": {
+      "percent": { "type": "String" }
+    }
+  },
+
+  "statusHave": "Imam",
+  "@statusHave": {},
+  "statusDuplicate": "Duplikat",
+  "@statusDuplicate": {},
+  "statusMissing": "Tražim",
+  "@statusMissing": {},
+  "statusFoil": "Foil",
+  "@statusFoil": {},
+
+  "duplicatesShort": "x{count}",
+  "@duplicatesShort": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "settingsLanguage": "Jezik",
+  "@settingsLanguage": {},
+  "settingsLanguageSerbian": "Srpski (latinica)",
+  "@settingsLanguageSerbian": {},
+  "settingsLanguageEnglish": "Engleski",
+  "@settingsLanguageEnglish": {},
+  "settingsTheme": "Tema",
+  "@settingsTheme": {},
+  "settingsThemeSystem": "Sistemska",
+  "@settingsThemeSystem": {},
+  "settingsThemeLight": "Svetla",
+  "@settingsThemeLight": {},
+  "settingsThemeDark": "Tamna",
+  "@settingsThemeDark": {},
+  "settingsAbout": "O aplikaciji",
+  "@settingsAbout": {},
+  "settingsVersion": "Verzija {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+
+  "stickerEditTitle": "Sličica {code}",
+  "@stickerEditTitle": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "stickerEditOwnedCount": "Koliko ih imaš?",
+  "@stickerEditOwnedCount": {},
+  "stickerEditNone": "Nemam",
+  "@stickerEditNone": {},
+  "stickerEditHaveOne": "Imam jednu",
+  "@stickerEditHaveOne": {},
+  "stickerEditDuplicates": "{count} duplikata",
+  "@stickerEditDuplicates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "actionDone": "Gotovo",
+  "@actionDone": {},
+  "actionCancel": "Otkaži",
+  "@actionCancel": {},
+  "actionReset": "Resetuj",
+  "@actionReset": {},
+
+  "modBlock": "Blokiraj",
+  "@modBlock": {},
+  "modBlockUser": "Blokiraj korisnika",
+  "@modBlockUser": {},
+  "modUnblock": "Deblokiraj",
+  "@modUnblock": {},
+  "modUnblockUser": "Deblokiraj korisnika",
+  "@modUnblockUser": {},
+  "modReport": "Prijavi",
+  "@modReport": {},
+  "modReportUser": "Prijavi korisnika",
+  "@modReportUser": {},
+  "modBlockConfirmTitle": "Blokirati {name}?",
+  "@modBlockConfirmTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "modBlockConfirmBody": "Nećete više videti njihove poruke ni zahteve za ćaskanje, niti će se pojavljivati u razmeni. Možete ih kasnije deblokirati u Podešavanjima.",
+  "@modBlockConfirmBody": {},
+  "modBlockedSnack": "{name} je blokiran/a.",
+  "@modBlockedSnack": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "modUnblockedSnack": "{name} je deblokiran/a.",
+  "@modUnblockedSnack": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "modReportTitle": "Prijavi {name}",
+  "@modReportTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "modReportReasonLabel": "Razlog prijave",
+  "@modReportReasonLabel": {},
+  "modReportReasonSpam": "Neželjene poruke (spam)",
+  "@modReportReasonSpam": {},
+  "modReportReasonHarassment": "Uznemiravanje ili vređanje",
+  "@modReportReasonHarassment": {},
+  "modReportReasonInappropriate": "Neprikladan sadržaj",
+  "@modReportReasonInappropriate": {},
+  "modReportReasonOther": "Drugo",
+  "@modReportReasonOther": {},
+  "modReportDetailsHint": "Dodatni detalji (opciono)",
+  "@modReportDetailsHint": {},
+  "modReportSubmit": "Pošalji prijavu",
+  "@modReportSubmit": {},
+  "modReportSentSnack": "Prijava je poslata. Hvala što pomažeš da zajednica bude bezbedna.",
+  "@modReportSentSnack": {},
+  "modBlockedUsersTitle": "Blokirani korisnici",
+  "@modBlockedUsersTitle": {},
+  "modBlockedUsersEmpty": "Nikoga niste blokirali.",
+  "@modBlockedUsersEmpty": {},
+  "modBlockedUsersSubtitle": "Upravljaj blokiranim korisnicima",
+  "@modBlockedUsersSubtitle": {},
+  "requestCooldownActive": "Ova osoba je nedavno odbila zahtev. Pokušajte ponovo za {hours} h.",
+  "@requestCooldownActive": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "requestAlreadyPending": "Već ste poslali zahtev ovoj osobi. Sačekajte odgovor.",
+  "@requestAlreadyPending": {},
+  "actionDelete": "Obriši",
+  "@actionDelete": {},
+  "chatDeleteTitle": "Obriši razgovor?",
+  "@chatDeleteTitle": {},
+  "chatDeleteBody": "Razgovor će biti uklonjen iz tvoje liste. Ponovo se pojavljuje ako stigne nova poruka.",
+  "@chatDeleteBody": {},
+  "chatDeletedSnack": "Razgovor je uklonjen.",
+  "@chatDeletedSnack": {}
+}

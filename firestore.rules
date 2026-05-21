@@ -1,0 +1,212 @@
+rules_version = '2';
+
+// Stickers Master — Firestore security rules.
+// Deployed via `firebase deploy --only firestore:rules` from the repo root.
+//
+// Test before deploying with the Firebase Rules Playground:
+//   Firebase Console -> Firestore Database -> Rules tab -> "Rules playground".
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // True when neither user has blocked the other. A block doc lives at
+    // /blocks/{blocker}_{blocked}, so we check both orderings.
+    function notBlockedBetween(a, b) {
+      return !exists(/databases/$(database)/documents/blocks/$(a + '_' + b)) &&
+             !exists(/databases/$(database)/documents/blocks/$(b + '_' + a));
+    }
+
+    // ------------------------------------------------------------------
+    // /users/{userId} and everything under it (collections, swap_index,
+    // private FCM tokens, future profile fields).
+    //
+    // Owner-only for everything under /users/{uid}. The Cloud Functions
+    // that deliver push notifications read the FCM token doc at
+    // /users/{uid}/private/fcm using the Admin SDK, which bypasses these
+    // rules. From the client side, only the owner can read/write their
+    // own subtree — no other user can see your FCM token.
+    // ------------------------------------------------------------------
+    match /users/{userId}/{document=**} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ------------------------------------------------------------------
+    // /public_profiles/{uid} — the user's publicly-visible profile used
+    // by the Swap area (display_name, city, country). Any signed-in user
+    // can read (so we can show match cards); only the owner can write.
+    //
+    // Subcollection /swap_indexes/{albumId}:
+    //   - duplicates: array<String> of sticker codes the user has 2+ of
+    // Same read/write rules as the parent.
+    //
+    // If the user wants to opt out of being visible in the swap area, we
+    // simply don't write their public_profile (no doc, no match). A
+    // privacy toggle can be added later by gating the upsert call.
+    // ------------------------------------------------------------------
+    match /public_profiles/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(uid);
+
+      match /swap_indexes/{albumId} {
+        allow read: if isSignedIn();
+        allow write: if isOwner(uid);
+      }
+    }
+
+    // ------------------------------------------------------------------
+    // /albums/{albumId} and subcollections.
+    //
+    // Static reference data. Read by any signed-in user; writes only via
+    // Admin SDK (seed scripts). Not actually used yet — sticker data is
+    // currently bundled in the app as an asset.
+    // ------------------------------------------------------------------
+    match /albums/{albumId}/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // ------------------------------------------------------------------
+    // /chat_requests/{requestId}  (Phase 3.1)
+    //
+    // - read: only sender or recipient
+    // - create: only by sender (and request.auth.uid must equal from_user)
+    // - update: only recipient can change `status` from 'pending' to
+    //   'accepted'/'declined'; sender can cancel their own pending request.
+    // - delete: disabled
+    // ------------------------------------------------------------------
+    match /chat_requests/{requestId} {
+      function reqFrom() { return resource.data.from_user; }
+      function reqTo()   { return resource.data.to_user; }
+
+      allow read: if isSignedIn() &&
+                     (request.auth.uid == reqFrom() ||
+                      request.auth.uid == reqTo());
+
+      allow create: if isSignedIn() &&
+                       request.auth.uid == request.resource.data.from_user &&
+                       request.resource.data.status == 'pending' &&
+                       request.resource.data.from_user != request.resource.data.to_user &&
+                       notBlockedBetween(request.resource.data.from_user,
+                                         request.resource.data.to_user);
+
+      allow update: if isSignedIn() && (
+        // Recipient accepts / declines a pending request
+        (request.auth.uid == reqTo() &&
+         resource.data.status == 'pending' &&
+         (request.resource.data.status == 'accepted' ||
+          request.resource.data.status == 'declined'))
+        ||
+        // Sender cancels their own pending request
+        (request.auth.uid == reqFrom() &&
+         resource.data.status == 'pending' &&
+         request.resource.data.status == 'cancelled')
+      );
+
+      allow delete: if false;
+    }
+
+    // ------------------------------------------------------------------
+    // /chats/{chatId}  (Phase 3.1)
+    //
+    // - read: only participants
+    // - create: only by signed-in user where they're in participants
+    //   (plus the chat doc must list exactly two participants)
+    // - update/delete on the doc itself: disabled (immutable after create)
+    //   except for `last_message`/`last_message_at` which is bumped by
+    //   message writes from a participant.
+    //
+    // Subcollection /messages/{messageId}:
+    // - read: only chat participants
+    // - create: only chat participants, and sender_id must equal the
+    //   writer's uid
+    // - update/delete: disabled (messages are immutable)
+    // ------------------------------------------------------------------
+    match /chats/{chatId} {
+      function chatParticipants() { return resource.data.participants; }
+      function isChatParticipant() {
+        return isSignedIn() && request.auth.uid in chatParticipants();
+      }
+
+      allow read: if isChatParticipant();
+
+      allow create: if isSignedIn() &&
+                       request.resource.data.participants.size() == 2 &&
+                       request.auth.uid in request.resource.data.participants;
+
+      // Allow participants to bump last_message / last_message_at; nothing else.
+      allow update: if isChatParticipant() &&
+                       request.resource.data.participants == resource.data.participants;
+
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        function parentParticipants() {
+          return get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        }
+        function isParticipantOfParent() {
+          return isSignedIn() && request.auth.uid in parentParticipants();
+        }
+
+        allow read: if isParticipantOfParent();
+
+        allow create: if isParticipantOfParent() &&
+                         request.resource.data.sender_id == request.auth.uid;
+
+        allow update, delete: if false;
+      }
+    }
+
+    // ------------------------------------------------------------------
+    // /blocks/{blockId}  (Phase 3.2 — moderation)
+    //
+    // Doc id is `{blocker}_{blocked}`. A block is one-directional: the
+    // blocker stops seeing the blocked user in swap, inbox, and pushes.
+    //
+    // - read:   either party (the blocker needs their own list; the
+    //           blocked-side query powers "hide users who blocked me"
+    //           from the swap area).
+    // - create: only the blocker, and you can't block yourself.
+    // - delete: only the blocker (unblock).
+    // - update: disabled.
+    // ------------------------------------------------------------------
+    match /blocks/{blockId} {
+      allow read: if isSignedIn() &&
+                     (request.auth.uid == resource.data.blocker ||
+                      request.auth.uid == resource.data.blocked);
+
+      allow create: if isSignedIn() &&
+                       request.auth.uid == request.resource.data.blocker &&
+                       request.resource.data.blocker != request.resource.data.blocked;
+
+      allow delete: if isSignedIn() &&
+                       request.auth.uid == resource.data.blocker;
+
+      allow update: if false;
+    }
+
+    // ------------------------------------------------------------------
+    // /reports/{reportId}  (Phase 3.2 — moderation)
+    //
+    // Users file abuse reports here. They're write-only from the client:
+    // - create: any signed-in user, and `reporter` must be their own uid.
+    // - read/update/delete: disabled (reports are reviewed via the
+    //   Firebase Console / Admin SDK only).
+    // ------------------------------------------------------------------
+    match /reports/{reportId} {
+      allow create: if isSignedIn() &&
+                       request.auth.uid == request.resource.data.reporter;
+      allow read, update, delete: if false;
+    }
+  }
+}
