@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stickers Master — Delete Account / Brisanje naloga</title>
+<style>
+  :root { --brand: #1565C0; --ink: #1a1a1a; --muted: #555; --line: #e3e3e3; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #f5f6f8; color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 64px; }
+  header {
+    background: var(--brand); color: #fff; padding: 32px 20px 26px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  header p { margin: 0; opacity: .9; font-size: .95rem; }
+  .lang-toggle { text-align: center; margin: 22px 0 6px; }
+  .lang-toggle button {
+    border: 1px solid var(--brand); background: #fff; color: var(--brand);
+    padding: 7px 18px; font-size: .9rem; cursor: pointer; font-weight: 600;
+  }
+  .lang-toggle button:first-child { border-radius: 6px 0 0 6px; }
+  .lang-toggle button:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+  .lang-toggle button.active { background: var(--brand); color: #fff; }
+  article { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 28px 30px; margin-top: 14px; }
+  h2 { color: var(--brand); font-size: 1.18rem; margin: 28px 0 8px; padding-top: 6px; border-top: 1px solid var(--line); }
+  h2:first-of-type { border-top: none; padding-top: 0; margin-top: 6px; }
+  h3 { font-size: 1rem; margin: 16px 0 4px; }
+  ul, ol { margin: 6px 0 6px; padding-left: 22px; }
+  li { margin: 5px 0; }
+  .meta { color: var(--muted); font-size: .88rem; }
+  a { color: var(--brand); }
+  .hidden { display: none; }
+  footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 26px; }
+  .note { background: #f0f6ff; border-left: 4px solid var(--brand); padding: 12px 16px; border-radius: 4px; margin: 14px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Stickers Master</h1>
+  <p>Delete Account &nbsp;·&nbsp; Brisanje naloga</p>
+</header>
+
+<div class="wrap">
+  <div class="lang-toggle">
+    <button id="btn-en" class="active" onclick="setLang('en')">English</button>
+    <button id="btn-sr" onclick="setLang('sr')">Srpski</button>
+  </div>
+
+  <!-- ================= ENGLISH ================= -->
+  <article id="en">
+    <p class="meta">Last updated: 2026-05-26</p>
+
+    <h2>Delete your account and data</h2>
+    <p>You can permanently delete your Stickers Master account and the data associated
+    with it at any time. There are two ways to do this.</p>
+
+    <h3>Option 1 — Delete directly in the app (recommended)</h3>
+    <ol>
+      <li>Open Stickers Master on your device.</li>
+      <li>Make sure you are signed in (this option is only available to signed-in users).</li>
+      <li>Open <strong>Settings → Account → Delete account</strong>.</li>
+      <li>Confirm the action when prompted.</li>
+    </ol>
+    <p>This is immediate and removes your account along with all your data.</p>
+
+    <h3>Option 2 — Email request</h3>
+    <p>If you no longer have the app installed, or you cannot sign in, send a deletion
+    request to:</p>
+    <p><strong><a href="mailto:maksimovic.ljubomir@gmail.com">maksimovic.ljubomir@gmail.com</a></strong></p>
+    <p>Include the email address of the Google account you used to sign in, or your
+    in-app display name and city, so we can locate your data. We will process the
+    request within 30 days and confirm by reply.</p>
+
+    <h2>What gets deleted</h2>
+    <p>When your account is deleted, the following is permanently removed:</p>
+    <ul>
+      <li>Your authentication record (Firebase Auth identity).</li>
+      <li>Your sticker collection progress, settings, and preferences.</li>
+      <li>Your public swap profile (display name, city, country, profile photo URL).</li>
+      <li>Any chat requests you sent or received that involve you.</li>
+      <li>All chats you are part of, including the full message history, are removed
+      for both participants. This is the same behaviour as the in-app deletion.</li>
+      <li>The list of users you have blocked.</li>
+      <li>The push-notification token stored for your device.</li>
+    </ul>
+
+    <h2>What is retained</h2>
+    <p>Abuse reports you have filed against other users are <strong>retained</strong>
+    after your account is deleted. This is necessary for the safety of other users and
+    for our records of moderation actions. These reports contain only the
+    reported user's ID, the reason, and any additional details you provided — they do
+    not contain your continuing identity.</p>
+
+    <h2>Backups</h2>
+    <p>Live data is deleted immediately. Encrypted Firebase backups, if any are taken,
+    may retain copies for a short rolling period and are then overwritten or expire.
+    No active queries can recover your data from backups.</p>
+
+    <h2>Contact</h2>
+    <p>For any question about this process, contact
+    <a href="mailto:maksimovic.ljubomir@gmail.com">maksimovic.ljubomir@gmail.com</a>.</p>
+
+    <p class="meta">See also: <a href="privacy-policy.html">Privacy Policy</a>.</p>
+  </article>
+
+  <!-- ================= SRPSKI ================= -->
+  <article id="sr" class="hidden">
+    <p class="meta">Poslednje ažuriranje: 26. 05. 2026.</p>
+
+    <h2>Brisanje naloga i podataka</h2>
+    <p>Možete trajno obrisati svoj Stickers Master nalog i sve povezane podatke u
+    svakom trenutku. Postoje dva načina.</p>
+
+    <h3>Opcija 1 — Brisanje direktno u aplikaciji (preporučeno)</h3>
+    <ol>
+      <li>Otvorite Stickers Master na svom uređaju.</li>
+      <li>Uverite se da ste prijavljeni (ova opcija je dostupna samo prijavljenim korisnicima).</li>
+      <li>Otvorite <strong>Podešavanja → Nalog → Obriši nalog</strong>.</li>
+      <li>Potvrdite radnju kada bude zatraženo.</li>
+    </ol>
+    <p>Brisanje je trenutno i uklanja vaš nalog zajedno sa svim podacima.</p>
+
+    <h3>Opcija 2 — Zahtev putem e-pošte</h3>
+    <p>Ako više nemate instaliranu aplikaciju ili ne možete da se prijavite, pošaljite
+    zahtev za brisanje na:</p>
+    <p><strong><a href="mailto:maksimovic.ljubomir@gmail.com">maksimovic.ljubomir@gmail.com</a></strong></p>
+    <p>Navedite e-adresu Google naloga kojom ste se prijavljivali ili vaše ime u
+    aplikaciji i grad, kako bismo mogli da pronađemo vaše podatke. Zahtev obrađujemo
+    u roku od 30 dana i potvrđujemo odgovorom.</p>
+
+    <h2>Šta se briše</h2>
+    <p>Kada se vaš nalog obriše, sledeće se trajno uklanja:</p>
+    <ul>
+      <li>Vaš zapis za prijavu (Firebase Auth identitet).</li>
+      <li>Napredak u kolekciji sličica, podešavanja i preferencije.</li>
+      <li>Javni profil za razmenu (prikazno ime, grad, država, URL profilne slike).</li>
+      <li>Svi zahtevi za ćaskanje koje ste poslali ili primili, a koji uključuju vas.</li>
+      <li>Sva ćaskanja u kojima učestvujete, uključujući celu istoriju poruka, uklanjaju
+      se za oba učesnika. Ovo je isto ponašanje kao kod brisanja u aplikaciji.</li>
+      <li>Lista korisnika koje ste blokirali.</li>
+      <li>Token za potisna obaveštenja sačuvan za vaš uređaj.</li>
+    </ul>
+
+    <h2>Šta se zadržava</h2>
+    <p>Prijave zloupotrebe koje ste podneli protiv drugih korisnika
+    <strong>se zadržavaju</strong> i nakon brisanja vašeg naloga. Ovo je neophodno
+    radi bezbednosti drugih korisnika i evidencije moderacije. Ove prijave sadrže samo
+    ID prijavljenog korisnika, razlog i dodatne detalje koje ste uneli — ne sadrže vaš
+    aktivni identitet.</p>
+
+    <h2>Rezervne kopije</h2>
+    <p>Aktivni podaci se brišu odmah. Šifrovane rezervne kopije Firebase-a, ako
+    postoje, mogu zadržati kopije kraći period i potom se prepisuju ili ističu. Nijedan
+    aktivan upit ne može vratiti vaše podatke iz rezervnih kopija.</p>
+
+    <h2>Kontakt</h2>
+    <p>Za sva pitanja u vezi sa ovim postupkom kontaktirajte
+    <a href="mailto:maksimovic.ljubomir@gmail.com">maksimovic.ljubomir@gmail.com</a>.</p>
+
+    <p class="meta">Vidi takođe: <a href="privacy-policy.html">Politiku privatnosti</a>.</p>
+  </article>
+
+  <footer>© 2026 Ljubomir Maksimović</footer>
+</div>
+
+<script>
+  function setLang(lang) {
+    const showEn = lang === 'en';
+    document.getElementById('en').classList.toggle('hidden', !showEn);
+    document.getElementById('sr').classList.toggle('hidden', showEn);
+    document.getElementById('btn-en').classList.toggle('active', showEn);
+    document.getElementById('btn-sr').classList.toggle('active', !showEn);
+    document.documentElement.lang = lang;
+  }
+</script>
+</body>
+</html>
