@@ -227,7 +227,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                   loading: () => const Center(child: CircularProgressIndicator()),
                   error: (e, _) => Center(child: Text('$e')),
                   data: (messages) => _MessageList(
-                    messages: _withIntro(widget.chat, messages),
+                    messages: _withIntro(
+                      widget.chat,
+                      _afterCutoff(messages, widget.chat, user.uid),
+                      user.uid,
+                    ),
                     myUid: user.uid,
                     scrollCtrl: _scrollCtrl,
                   ),
@@ -280,6 +284,23 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   }
 }
 
+/// Drop messages older than [myUid]'s "delete forever for me" cutoff.
+///
+/// When a user picks "Delete forever" we record a server timestamp in
+/// the chat doc's `deleted_at_for[myUid]`; from that moment on, *that
+/// user* must not see any message whose `createdAt` is at or before the
+/// cutoff — even if the chat resurfaces later (new message, or a new
+/// accepted chat request that maps to the same deterministic chat id).
+List<ChatMessage> _afterCutoff(
+  List<ChatMessage> messages,
+  Chat chat,
+  String myUid,
+) {
+  final cutoff = chat.historyCutoffFor(myUid);
+  if (cutoff == null) return messages;
+  return messages.where((m) => m.createdAt.isAfter(cutoff)).toList();
+}
+
 /// Prepend a synthetic [ChatMessage] for the intro stored on the chat doc.
 ///
 /// The intro field gets populated by [ChatRepository.acceptRequest] (since
@@ -287,8 +308,18 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
 /// sender). If the intro time happens to land after a real reply (clock
 /// skew, edge cases), we still keep it first — it's conceptually the
 /// "message zero" of the conversation.
-List<ChatMessage> _withIntro(Chat chat, List<ChatMessage> messages) {
+///
+/// Also skipped when the intro predates [myUid]'s "delete forever" cutoff,
+/// so an old intro isn't resurrected after the user wiped the chat.
+List<ChatMessage> _withIntro(
+  Chat chat,
+  List<ChatMessage> messages,
+  String myUid,
+) {
   if (!chat.hasIntro) return messages;
+  final cutoff = chat.historyCutoffFor(myUid);
+  final introAt = chat.introAt ?? chat.createdAt;
+  if (cutoff != null && !introAt.isAfter(cutoff)) return messages;
   // Don't duplicate the intro if a real message with the same id slipped in
   // (defensive; shouldn't happen since we never write to /messages here).
   const introId = '__intro__';
@@ -297,7 +328,7 @@ List<ChatMessage> _withIntro(Chat chat, List<ChatMessage> messages) {
     id: introId,
     senderId: chat.introSender!,
     text: chat.introMessage!,
-    createdAt: chat.introAt ?? chat.createdAt,
+    createdAt: introAt,
   );
   return [synthetic, ...messages];
 }

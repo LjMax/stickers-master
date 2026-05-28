@@ -59,6 +59,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get inboxSectionRequests => 'Novi zahtevi';
 
   @override
+  String get inboxSectionSent => 'Poslato';
+
+  @override
   String get inboxSectionChats => 'Aktivni razgovori';
 
   @override
@@ -76,6 +79,34 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get inboxRequestDeclined => 'Zahtev je odbijen';
+
+  @override
+  String get sentRequestStatusPending => 'Čeka odgovor';
+
+  @override
+  String get sentRequestStatusDeclined => 'Odbijeno';
+
+  @override
+  String get sentRequestRecipientFallback => 'Kolekcionar';
+
+  @override
+  String get sentRequestCancel => 'Otkaži zahtev';
+
+  @override
+  String get sentRequestDismiss => 'Ukloni';
+
+  @override
+  String get sentRequestCancelConfirmTitle => 'Otkazati ovaj zahtev?';
+
+  @override
+  String get sentRequestCancelConfirmBody =>
+      'Primalac ga više neće videti. Možeš poslati novi zahtev kasnije.';
+
+  @override
+  String get sentRequestCancelledSnack => 'Zahtev je otkazan.';
+
+  @override
+  String get sentRequestDismissedSnack => 'Zahtev je uklonjen.';
 
   @override
   String get chatNoLastMessage => 'Bez poruka';
@@ -558,12 +589,39 @@ class AppLocalizationsSr extends AppLocalizations {
   String get actionDelete => 'Obriši';
 
   @override
-  String get chatDeleteTitle => 'Obriši razgovor?';
+  String get chatActionsTitle => 'Razgovor';
 
   @override
-  String get chatDeleteBody =>
-      'Razgovor će biti uklonjen iz tvoje liste. Ponovo se pojavljuje ako stigne nova poruka.';
+  String get chatActionHide => 'Sakrij razgovor';
 
   @override
-  String get chatDeletedSnack => 'Razgovor je uklonjen.';
+  String get chatActionHideSubtitle =>
+      'Uklanja iz tvoje liste. Ponovo se pojavljuje kada stigne nova poruka.';
+
+  @override
+  String get chatActionDeleteForever => 'Obriši zauvek';
+
+  @override
+  String get chatActionDeleteForeverSubtitle =>
+      'Briše sve poruke iz tvog prikaza. Druga strana zadržava svoju kopiju.';
+
+  @override
+  String get chatHideTitle => 'Sakriti razgovor?';
+
+  @override
+  String get chatHideBody =>
+      'Razgovor će biti uklonjen iz tvoje liste. Ponovo se pojavljuje kada stigne nova poruka.';
+
+  @override
+  String get chatHiddenSnack => 'Razgovor je sakriven.';
+
+  @override
+  String get chatDeleteForeverTitle => 'Obrisati razgovor zauvek?';
+
+  @override
+  String get chatDeleteForeverBody =>
+      'Sve poruke će nestati iz tvog prikaza ovog razgovora. Ako ikad ponovo razgovaraš sa ovom osobom, krećeš iz čistog razgovora. Druga osoba i dalje vidi tvoje prethodne poruke. Ovo se ne može poništiti.';
+
+  @override
+  String get chatDeletedForeverSnack => 'Razgovor je obrisan iz tvog prikaza.';
 }

@@ -32,8 +32,9 @@ class InboxScreen extends ConsumerWidget {
     }
 
     final pending = ref.watch(incomingRequestsProvider);
+    final sent = ref.watch(outgoingRequestsProvider);
     final chats = ref.watch(myChatsProvider);
-    // Blocked users are filtered out of both sections.
+    // Blocked users are filtered out of all sections.
     final iBlocked =
         ref.watch(iBlockedProvider).valueOrNull ?? const <String>{};
     final blockedAny = ref.watch(blockedUidsProvider);
@@ -43,7 +44,7 @@ class InboxScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
-          // Pending requests section — collapses silently if there are
+          // Pending incoming requests — collapses silently if there are
           // none or if the Firestore query is still spinning up / errored.
           // We never surface raw exception text to the user (it can leak
           // project IDs and isn't actionable for the reader anyway).
@@ -63,6 +64,30 @@ class InboxScreen extends ConsumerWidget {
                 children: [
                   _SectionHeader(label: l.inboxSectionRequests),
                   ...visible.map((r) => _RequestTile(request: r)),
+                ],
+              );
+            },
+          ),
+          // Outgoing requests the user has sent — pending + declined
+          // (declined ones can be dismissed via long-press).
+          sent.when(
+            loading: () => const SizedBox.shrink(),
+            error: (e, st) {
+              debugPrint('inbox: outgoing requests error: $e');
+              return const SizedBox.shrink();
+            },
+            data: (requests) {
+              // Don't show outgoing to someone *I* have blocked — I
+              // wouldn't want to chat with them anyway.
+              final visible = requests
+                  .where((r) => !iBlocked.contains(r.toUser))
+                  .toList();
+              if (visible.isEmpty) return const SizedBox.shrink();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _SectionHeader(label: l.inboxSectionSent),
+                  ...visible.map((r) => _SentRequestTile(request: r)),
                 ],
               );
             },
@@ -94,7 +119,13 @@ class InboxScreen extends ConsumerWidget {
                   (pending.valueOrNull ?? const <ChatRequest>[])
                       .where((r) => !blockedAny.contains(r.fromUser))
                       .toList();
-              if (visibleChats.isEmpty && visiblePending.isEmpty) {
+              final visibleSent =
+                  (sent.valueOrNull ?? const <ChatRequest>[])
+                      .where((r) => !iBlocked.contains(r.toUser))
+                      .toList();
+              if (visibleChats.isEmpty &&
+                  visiblePending.isEmpty &&
+                  visibleSent.isEmpty) {
                 return Padding(
                   padding: const EdgeInsets.only(top: 64),
                   child: EmptyState(
@@ -115,6 +146,132 @@ class InboxScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Tile for an *outgoing* chat request — one the signed-in user sent
+/// and is still pending or was declined by the recipient.
+///
+/// Long-press menu:
+///   - Pending  → Cancel request (sets status=cancelled; no cooldown).
+///   - Declined → Dismiss        (sets from_hidden_at; doc kept for cooldown).
+class _SentRequestTile extends ConsumerWidget {
+  const _SentRequestTile({required this.request});
+  final ChatRequest request;
+
+  Future<void> _confirmCancel(BuildContext context, WidgetRef ref) async {
+    final l = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.sentRequestCancelConfirmTitle),
+        content: Text(l.sentRequestCancelConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l.actionCancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l.sentRequestCancel),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    final l2 = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(chatRepositoryProvider).cancelRequest(request.id);
+      messenger.showSnackBar(
+        SnackBar(content: Text(l2.sentRequestCancelledSnack)),
+      );
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
+
+  Future<void> _dismiss(BuildContext context, WidgetRef ref) async {
+    final l = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(chatRepositoryProvider).dismissOutgoing(request.id);
+      messenger.showSnackBar(
+        SnackBar(content: Text(l.sentRequestDismissedSnack)),
+      );
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final isPending = request.status == ChatRequestStatus.pending;
+    final isDeclined = request.status == ChatRequestStatus.declined;
+
+    final name = (request.toDisplayName?.trim().isNotEmpty ?? false)
+        ? request.toDisplayName!
+        : l.sentRequestRecipientFallback;
+    final statusLabel =
+        isPending ? l.sentRequestStatusPending : l.sentRequestStatusDeclined;
+    final statusColor = isPending ? scheme.primary : scheme.error;
+
+    return ListTile(
+      leading: UserAvatar(
+        name: name,
+        photoUrl: request.toPhotoUrl,
+        radius: 20,
+      ),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Status chip — small enough not to compete with the name.
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: statusColor.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              statusLabel,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: statusColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ),
+        ],
+      ),
+      subtitle: Text(
+        request.introMessage,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: scheme.onSurfaceVariant,
+            ),
+      ),
+      onLongPress: () =>
+          isPending ? _confirmCancel(context, ref) : _dismiss(context, ref),
+      trailing: isDeclined
+          ? IconButton(
+              icon: const Icon(Icons.close),
+              tooltip: l.sentRequestDismiss,
+              onPressed: () => _dismiss(context, ref),
+            )
+          : null,
     );
   }
 }
@@ -272,25 +429,77 @@ class _ChatTile extends ConsumerWidget {
     return sameDay ? _timeFmt.format(local) : _dateFmt.format(local);
   }
 
-  /// Long-press handler: confirm, then "delete for me" (hide the chat).
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+  /// Long-press handler: present a bottom sheet with two actions —
+  ///   - Hide chat (soft, reversible, reappears on new message)
+  ///   - Delete forever (hard for me, irreversible, history sliced
+  ///     out of *my* view permanently — other user keeps it)
+  Future<void> _onLongPress(BuildContext context, WidgetRef ref) async {
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+
+    final action = await showModalBottomSheet<_ChatAction>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+              child: Text(
+                l.chatActionsTitle,
+                style: Theme.of(ctx).textTheme.titleSmall,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.visibility_off_outlined),
+              title: Text(l.chatActionHide),
+              subtitle: Text(l.chatActionHideSubtitle),
+              onTap: () => Navigator.of(ctx).pop(_ChatAction.hide),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.delete_forever_outlined,
+                color: scheme.error,
+              ),
+              title: Text(
+                l.chatActionDeleteForever,
+                style: TextStyle(color: scheme.error),
+              ),
+              subtitle: Text(l.chatActionDeleteForeverSubtitle),
+              onTap: () =>
+                  Navigator.of(ctx).pop(_ChatAction.deleteForever),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+
+    if (action == null || !context.mounted) return;
+    if (action == _ChatAction.hide) {
+      await _confirmHide(context, ref);
+    } else {
+      await _confirmDeleteForever(context, ref);
+    }
+  }
+
+  Future<void> _confirmHide(BuildContext context, WidgetRef ref) async {
     final l = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l.chatDeleteTitle),
-        content: Text(l.chatDeleteBody),
+        title: Text(l.chatHideTitle),
+        content: Text(l.chatHideBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(l.actionCancel),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-            ),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l.actionDelete),
+            child: Text(l.chatActionHide),
           ),
         ],
       ),
@@ -301,7 +510,43 @@ class _ChatTile extends ConsumerWidget {
     try {
       await ref.read(chatRepositoryProvider).hideChatForMe(chat.id, myUid);
       messenger.showSnackBar(
-        SnackBar(content: Text(l2.chatDeletedSnack)),
+        SnackBar(content: Text(l2.chatHiddenSnack)),
+      );
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
+
+  Future<void> _confirmDeleteForever(
+      BuildContext context, WidgetRef ref) async {
+    final l = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.chatDeleteForeverTitle),
+        content: Text(l.chatDeleteForeverBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l.actionCancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l.chatActionDeleteForever),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    final l2 = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(chatRepositoryProvider).deleteChatForMe(chat.id, myUid);
+      messenger.showSnackBar(
+        SnackBar(content: Text(l2.chatDeletedForeverSnack)),
       );
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text('$e')));
@@ -364,7 +609,10 @@ class _ChatTile extends ConsumerWidget {
       onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
         builder: (_) => ChatDetailScreen(chat: chat),
       )),
-      onLongPress: () => _confirmDelete(context, ref),
+      onLongPress: () => _onLongPress(context, ref),
     );
   }
 }
+
+/// Action choice from the chat tile's long-press sheet.
+enum _ChatAction { hide, deleteForever }

@@ -142,30 +142,21 @@ class FcmService {
     _lastWrittenToken = null;
   }
 
+  /// Called by Firebase when a push arrives **while the app is foreground**
+  /// (background / terminated pushes are rendered by the OS via the FCM
+  /// notification payload — this handler never runs in those cases).
+  ///
+  /// Behaviour: do nothing. The user is already in the app, so a system
+  /// tray banner would be redundant and intrusive (especially when they
+  /// are inside the very chat that the notification is about). The same
+  /// data has already been delivered via the live Firestore listeners:
+  /// the inbox tab badge will increment, and an open chat thread will
+  /// receive the new message in its message stream within milliseconds.
+  ///
+  /// We deliberately do **not** call `_local.show(...)` here — that was
+  /// what produced the heads-up notification while the app was open.
   Future<void> _onForegroundMessage(RemoteMessage msg) async {
-    final notif = msg.notification;
-    final title = notif?.title ?? msg.data['title'] as String? ?? '';
-    final body = notif?.body ?? msg.data['body'] as String? ?? '';
-    if (title.isEmpty && body.isEmpty) return;
-
-    final detail = NotificationDetails(
-      android: AndroidNotificationDetails(
-        _channel.id,
-        _channel.name,
-        channelDescription: _channel.description,
-        importance: Importance.high,
-        priority: Priority.high,
-        icon: '@mipmap/ic_launcher',
-      ),
-    );
-    await _local.show(
-      DateTime.now().millisecondsSinceEpoch.remainder(1 << 31),
-      title,
-      body,
-      detail,
-      // Encode the data map so onLocalTap can route on it.
-      payload: _encodePayload(msg.data),
-    );
+    // No-op: in-app indicators (badge, message stream) cover this case.
   }
 
   void _onMessageOpenedApp(RemoteMessage msg) {

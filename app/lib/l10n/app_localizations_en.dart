@@ -59,6 +59,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inboxSectionRequests => 'New requests';
 
   @override
+  String get inboxSectionSent => 'Sent';
+
+  @override
   String get inboxSectionChats => 'Active chats';
 
   @override
@@ -76,6 +79,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inboxRequestDeclined => 'Request declined';
+
+  @override
+  String get sentRequestStatusPending => 'Pending';
+
+  @override
+  String get sentRequestStatusDeclined => 'Declined';
+
+  @override
+  String get sentRequestRecipientFallback => 'Collector';
+
+  @override
+  String get sentRequestCancel => 'Cancel request';
+
+  @override
+  String get sentRequestDismiss => 'Dismiss';
+
+  @override
+  String get sentRequestCancelConfirmTitle => 'Cancel this request?';
+
+  @override
+  String get sentRequestCancelConfirmBody =>
+      'The recipient will stop seeing it. You can send a new request later.';
+
+  @override
+  String get sentRequestCancelledSnack => 'Request cancelled.';
+
+  @override
+  String get sentRequestDismissedSnack => 'Request dismissed.';
 
   @override
   String get chatNoLastMessage => 'No messages yet';
@@ -558,12 +589,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actionDelete => 'Delete';
 
   @override
-  String get chatDeleteTitle => 'Delete chat?';
+  String get chatActionsTitle => 'Chat actions';
 
   @override
-  String get chatDeleteBody =>
+  String get chatActionHide => 'Hide chat';
+
+  @override
+  String get chatActionHideSubtitle =>
+      'Removes it from your inbox. Reappears if a new message arrives.';
+
+  @override
+  String get chatActionDeleteForever => 'Delete forever';
+
+  @override
+  String get chatActionDeleteForeverSubtitle =>
+      'Erases all messages from your view. The other person keeps their copy.';
+
+  @override
+  String get chatHideTitle => 'Hide chat?';
+
+  @override
+  String get chatHideBody =>
       'The chat will be removed from your list. It reappears if a new message arrives.';
 
   @override
-  String get chatDeletedSnack => 'Chat removed.';
+  String get chatHiddenSnack => 'Chat hidden.';
+
+  @override
+  String get chatDeleteForeverTitle => 'Delete chat forever?';
+
+  @override
+  String get chatDeleteForeverBody =>
+      'All messages will disappear from your view of this chat. If you ever talk to this person again, you\'ll start with a fresh conversation. The other person will still see your past messages. This can\'t be undone.';
+
+  @override
+  String get chatDeletedForeverSnack => 'Chat deleted from your view.';
 }

@@ -58,12 +58,18 @@ class ChatRepository {
     });
   }
 
-  /// Send a chat request to [toUser]. Returns the new request's id.
+  /// Send a chat request to [toUid]. Returns the new request's id.
+  ///
+  /// Both sender (`from_*`) and recipient (`to_*`) display name + photo URL
+  /// are denormalised onto the request doc so neither side needs an
+  /// extra profile fetch to render their inbox.
   Future<String> sendRequest({
     required String fromUid,
     required String fromDisplayName,
     String? fromPhotoUrl,
     required String toUid,
+    String? toDisplayName,
+    String? toPhotoUrl,
     required String albumId,
     required String introMessage,
   }) async {
@@ -72,12 +78,65 @@ class ChatRepository {
       'to_user': toUid,
       'from_display_name': fromDisplayName,
       if (fromPhotoUrl != null) 'from_photo_url': fromPhotoUrl,
+      if (toDisplayName != null && toDisplayName.isNotEmpty)
+        'to_display_name': toDisplayName,
+      if (toPhotoUrl != null && toPhotoUrl.isNotEmpty)
+        'to_photo_url': toPhotoUrl,
       'album_id': albumId,
       'intro_message': introMessage,
       'created_at': FieldValue.serverTimestamp(),
       'status': 'pending',
     });
     return ref.id;
+  }
+
+  /// Stream the signed-in user's *outgoing* chat requests — the ones they
+  /// sent and which haven't yet led to an open chat. Includes:
+  ///   - pending (waiting for recipient to act)
+  ///   - declined (recipient declined; sender can dismiss to hide)
+  ///
+  /// Excludes accepted (those show up as an open chat instead) and
+  /// cancelled (the sender pulled them back).
+  ///
+  /// Sender-dismissed entries (`from_hidden_at` set) are filtered out
+  /// client-side — keeping the doc in Firestore preserves the re-request
+  /// cooldown logic in [checkCanSendRequest].
+  ///
+  /// As with [watchIncomingPending], we sort client-side to avoid the
+  /// composite-index dance for `where + orderBy`.
+  Stream<List<ChatRequest>> watchOutgoing(String uid) {
+    return _requests
+        .where('from_user', isEqualTo: uid)
+        .snapshots()
+        .map((q) {
+      final list = q.docs.map(ChatRequest.fromDoc).where((r) {
+        if (r.isFromHidden) return false;
+        return r.status == ChatRequestStatus.pending ||
+               r.status == ChatRequestStatus.declined;
+      }).toList();
+      list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return list;
+    });
+  }
+
+  /// Sender cancels a *pending* request they sent. Marks status as
+  /// `cancelled` (not `declined`) so the re-request cooldown does **not**
+  /// kick in — the recipient never said no, the sender just changed
+  /// their mind. The sender can immediately send a fresh request.
+  Future<void> cancelRequest(String requestId) async {
+    await _requests.doc(requestId).update({
+      'status': 'cancelled',
+    });
+  }
+
+  /// Sender dismisses a *declined* request from their own inbox. The doc
+  /// stays on Firestore (so [checkCanSendRequest] still enforces the
+  /// 24h cooldown), but the sender's UI hides it via the `from_hidden_at`
+  /// timestamp.
+  Future<void> dismissOutgoing(String requestId) async {
+    await _requests.doc(requestId).update({
+      'from_hidden_at': FieldValue.serverTimestamp(),
+    });
   }
 
   /// Recipient accepts the request: marks accepted, creates the chat doc
@@ -219,11 +278,32 @@ class ChatRepository {
     return Chat.fromMap(snap.id, snap.data() ?? const {});
   }
 
-  /// Hide [chatId] from [uid]'s inbox ("delete for me"). The chat and its
+  /// Soft-hide [chatId] from [uid]'s inbox. Reversible: the chat and its
   /// messages are kept; the chat reappears for [uid] if a new message is
-  /// sent (see [sendMessage], which clears `hidden_for`).
+  /// sent (see [sendMessage], which clears `hidden_for`). Use this for
+  /// "I'm done with this for now" — no history is lost.
   Future<void> hideChatForMe(String chatId, String uid) async {
     await _db.doc('chats/$chatId').update({
+      'hidden_for': FieldValue.arrayUnion([uid]),
+    });
+  }
+
+  /// Hard-delete [chatId] *for [uid] only* — irreversible from this user's
+  /// side: they will never see any message from before the call to this
+  /// method, even if the chat resurfaces (new message, or a new accepted
+  /// chat request that maps to the same deterministic chat id).
+  ///
+  /// Implementation: writes a `deleted_at_for.{uid}` server timestamp on
+  /// the chat doc and adds [uid] to `hidden_for`. The actual messages
+  /// stay in Firestore — the *other* participant continues to see the
+  /// full history — but [uid]'s client filters out anything with
+  /// `createdAt <= deleted_at_for[uid]` (see [Chat.historyCutoffFor]).
+  ///
+  /// This is the right primitive for "Delete forever for me" UX while
+  /// keeping the data structure shared between the two users.
+  Future<void> deleteChatForMe(String chatId, String uid) async {
+    await _db.doc('chats/$chatId').update({
+      'deleted_at_for.$uid': FieldValue.serverTimestamp(),
       'hidden_for': FieldValue.arrayUnion([uid]),
     });
   }

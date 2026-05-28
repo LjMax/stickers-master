@@ -17,6 +17,15 @@ final incomingRequestsProvider = StreamProvider<List<ChatRequest>>((ref) {
   return ref.read(chatRepositoryProvider).watchIncomingPending(uid);
 });
 
+/// Outgoing chat requests the signed-in user has sent that haven't
+/// resolved into a chat yet — i.e. still pending, or declined and not
+/// yet dismissed by the sender. Powers the "Sent" section of the inbox.
+final outgoingRequestsProvider = StreamProvider<List<ChatRequest>>((ref) {
+  final uid = ref.watch(currentUserProvider.select((u) => u?.uid));
+  if (uid == null) return Stream.value(const []);
+  return ref.read(chatRepositoryProvider).watchOutgoing(uid);
+});
+
 /// Active chats the signed-in user is part of.
 final myChatsProvider = StreamProvider<List<Chat>>((ref) {
   final uid = ref.watch(currentUserProvider.select((u) => u?.uid));

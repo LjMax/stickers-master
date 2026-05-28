@@ -110,6 +110,90 @@ void main() {
     });
   });
 
+  group('Chat per-user history cutoff', () {
+    // historyCutoffFor reflects the per-user "delete forever for me"
+    // timestamp stored on the chat doc under `deleted_at_for.{uid}`.
+    // Messages with createdAt <= cutoff must be filtered out of that
+    // user's view (chat detail screen does the filtering); the OTHER
+    // user keeps their copy.
+
+    Chat buildChat(Map<String, dynamic> overrides) {
+      final data = <String, dynamic>{
+        'participants': <String>['me', 'you'],
+        'participant_names': <String, dynamic>{'me': 'Me', 'you': 'You'},
+        'participant_photos': <String, dynamic>{},
+        'album_id': 'a',
+        'created_at': Timestamp.fromDate(DateTime(2026, 5, 1)),
+        ...overrides,
+      };
+      return Chat.fromMap('me_you', data);
+    }
+
+    test('historyCutoffFor returns null when no cutoff is set', () {
+      final chat = buildChat({});
+      expect(chat.historyCutoffFor('me'), isNull);
+      expect(chat.deletedAtFor, isEmpty);
+    });
+
+    test('historyCutoffFor returns my timestamp when I have deleted', () {
+      final myCutoff = DateTime(2026, 5, 10, 14, 30);
+      final chat = buildChat({
+        'deleted_at_for': <String, dynamic>{
+          'me': Timestamp.fromDate(myCutoff),
+        },
+      });
+      expect(chat.historyCutoffFor('me'), myCutoff);
+      expect(chat.historyCutoffFor('you'), isNull);
+    });
+
+    test('historyCutoffFor is per-user: my delete does not affect you', () {
+      final myCutoff = DateTime(2026, 5, 10);
+      final yourCutoff = DateTime(2026, 5, 12);
+      final chat = buildChat({
+        'deleted_at_for': <String, dynamic>{
+          'me': Timestamp.fromDate(myCutoff),
+          'you': Timestamp.fromDate(yourCutoff),
+        },
+      });
+      expect(chat.historyCutoffFor('me'), myCutoff);
+      expect(chat.historyCutoffFor('you'), yourCutoff);
+    });
+
+    test('hasUnreadFor ignores last message that predates my cutoff', () {
+      // If the only message arrived before I deleted, I shouldn't
+      // see an unread badge for it.
+      final cutoff = DateTime(2026, 5, 10, 12, 0);
+      final lastMsgAt = DateTime(2026, 5, 10, 11, 0); // before cutoff
+      final chat = buildChat({
+        'participants': <String>['me', 'you'],
+        'last_message': 'hi',
+        'last_message_at': Timestamp.fromDate(lastMsgAt),
+        'last_message_sender': 'you',
+        'deleted_at_for': <String, dynamic>{
+          'me': Timestamp.fromDate(cutoff),
+        },
+      });
+      expect(chat.hasUnreadFor('me'), isFalse);
+    });
+
+    test('hasUnreadFor still fires for a message after my cutoff', () {
+      // A NEW message that arrived after my delete should resurface the
+      // chat as unread.
+      final cutoff = DateTime(2026, 5, 10, 12, 0);
+      final lastMsgAt = DateTime(2026, 5, 11, 8, 0); // after cutoff
+      final chat = buildChat({
+        'participants': <String>['me', 'you'],
+        'last_message': 'still here?',
+        'last_message_at': Timestamp.fromDate(lastMsgAt),
+        'last_message_sender': 'you',
+        'deleted_at_for': <String, dynamic>{
+          'me': Timestamp.fromDate(cutoff),
+        },
+      });
+      expect(chat.hasUnreadFor('me'), isTrue);
+    });
+  });
+
   group('Chat intro persistence', () {
     // The intro message lives on the chat doc itself (not in /messages)
     // because Firestore rules require sender_id == request.auth.uid on
@@ -200,6 +284,68 @@ void main() {
         'status': 'not-a-real-status',
       });
       expect(req.status, ChatRequestStatus.pending);
+    });
+
+    test('parses recipient denormalised fields when present', () {
+      final req = ChatRequest.fromMap('r', {
+        'from_user': 'a',
+        'to_user': 'b',
+        'from_display_name': 'Alice',
+        'to_display_name': 'Bob',
+        'to_photo_url': 'http://example.com/bob.png',
+        'album_id': 'panini',
+        'intro_message': 'Hey',
+        'created_at': Timestamp.fromDate(DateTime(2026, 5, 2)),
+        'status': 'pending',
+      });
+      expect(req.toDisplayName, 'Bob');
+      expect(req.toPhotoUrl, 'http://example.com/bob.png');
+    });
+
+    test('toDisplayName and toPhotoUrl are null on old requests', () {
+      // Requests written before the denormalisation must still parse cleanly.
+      final req = ChatRequest.fromMap('r', {
+        'from_user': 'a',
+        'to_user': 'b',
+        'from_display_name': 'Alice',
+        'album_id': 'panini',
+        'intro_message': 'Hey',
+        'created_at': Timestamp.fromDate(DateTime(2026, 5, 2)),
+        'status': 'pending',
+      });
+      expect(req.toDisplayName, isNull);
+      expect(req.toPhotoUrl, isNull);
+    });
+
+    test('cancelled is a parseable status', () {
+      final req = ChatRequest.fromMap('r', {
+        'from_user': 'a',
+        'to_user': 'b',
+        'created_at': Timestamp.fromDate(DateTime(2026, 5, 2)),
+        'status': 'cancelled',
+      });
+      expect(req.status, ChatRequestStatus.cancelled);
+    });
+
+    test('isFromHidden reflects the from_hidden_at timestamp', () {
+      final hidden = ChatRequest.fromMap('r', {
+        'from_user': 'a',
+        'to_user': 'b',
+        'created_at': Timestamp.fromDate(DateTime(2026, 5, 2)),
+        'status': 'declined',
+        'from_hidden_at': Timestamp.fromDate(DateTime(2026, 5, 3)),
+      });
+      expect(hidden.isFromHidden, isTrue);
+      expect(hidden.fromHiddenAt, DateTime(2026, 5, 3));
+
+      final visible = ChatRequest.fromMap('r2', {
+        'from_user': 'a',
+        'to_user': 'b',
+        'created_at': Timestamp.fromDate(DateTime(2026, 5, 2)),
+        'status': 'declined',
+      });
+      expect(visible.isFromHidden, isFalse);
+      expect(visible.fromHiddenAt, isNull);
     });
   });
 }

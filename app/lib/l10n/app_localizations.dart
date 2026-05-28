@@ -188,6 +188,12 @@ abstract class AppLocalizations {
   /// **'Novi zahtevi'**
   String get inboxSectionRequests;
 
+  /// No description provided for @inboxSectionSent.
+  ///
+  /// In sr, this message translates to:
+  /// **'Poslato'**
+  String get inboxSectionSent;
+
   /// No description provided for @inboxSectionChats.
   ///
   /// In sr, this message translates to:
@@ -223,6 +229,60 @@ abstract class AppLocalizations {
   /// In sr, this message translates to:
   /// **'Zahtev je odbijen'**
   String get inboxRequestDeclined;
+
+  /// No description provided for @sentRequestStatusPending.
+  ///
+  /// In sr, this message translates to:
+  /// **'Čeka odgovor'**
+  String get sentRequestStatusPending;
+
+  /// No description provided for @sentRequestStatusDeclined.
+  ///
+  /// In sr, this message translates to:
+  /// **'Odbijeno'**
+  String get sentRequestStatusDeclined;
+
+  /// No description provided for @sentRequestRecipientFallback.
+  ///
+  /// In sr, this message translates to:
+  /// **'Kolekcionar'**
+  String get sentRequestRecipientFallback;
+
+  /// No description provided for @sentRequestCancel.
+  ///
+  /// In sr, this message translates to:
+  /// **'Otkaži zahtev'**
+  String get sentRequestCancel;
+
+  /// No description provided for @sentRequestDismiss.
+  ///
+  /// In sr, this message translates to:
+  /// **'Ukloni'**
+  String get sentRequestDismiss;
+
+  /// No description provided for @sentRequestCancelConfirmTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Otkazati ovaj zahtev?'**
+  String get sentRequestCancelConfirmTitle;
+
+  /// No description provided for @sentRequestCancelConfirmBody.
+  ///
+  /// In sr, this message translates to:
+  /// **'Primalac ga više neće videti. Možeš poslati novi zahtev kasnije.'**
+  String get sentRequestCancelConfirmBody;
+
+  /// No description provided for @sentRequestCancelledSnack.
+  ///
+  /// In sr, this message translates to:
+  /// **'Zahtev je otkazan.'**
+  String get sentRequestCancelledSnack;
+
+  /// No description provided for @sentRequestDismissedSnack.
+  ///
+  /// In sr, this message translates to:
+  /// **'Zahtev je uklonjen.'**
+  String get sentRequestDismissedSnack;
 
   /// No description provided for @chatNoLastMessage.
   ///
@@ -1046,23 +1106,71 @@ abstract class AppLocalizations {
   /// **'Obriši'**
   String get actionDelete;
 
-  /// No description provided for @chatDeleteTitle.
+  /// No description provided for @chatActionsTitle.
   ///
   /// In sr, this message translates to:
-  /// **'Obriši razgovor?'**
-  String get chatDeleteTitle;
+  /// **'Razgovor'**
+  String get chatActionsTitle;
 
-  /// No description provided for @chatDeleteBody.
+  /// No description provided for @chatActionHide.
   ///
   /// In sr, this message translates to:
-  /// **'Razgovor će biti uklonjen iz tvoje liste. Ponovo se pojavljuje ako stigne nova poruka.'**
-  String get chatDeleteBody;
+  /// **'Sakrij razgovor'**
+  String get chatActionHide;
 
-  /// No description provided for @chatDeletedSnack.
+  /// No description provided for @chatActionHideSubtitle.
   ///
   /// In sr, this message translates to:
-  /// **'Razgovor je uklonjen.'**
-  String get chatDeletedSnack;
+  /// **'Uklanja iz tvoje liste. Ponovo se pojavljuje kada stigne nova poruka.'**
+  String get chatActionHideSubtitle;
+
+  /// No description provided for @chatActionDeleteForever.
+  ///
+  /// In sr, this message translates to:
+  /// **'Obriši zauvek'**
+  String get chatActionDeleteForever;
+
+  /// No description provided for @chatActionDeleteForeverSubtitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Briše sve poruke iz tvog prikaza. Druga strana zadržava svoju kopiju.'**
+  String get chatActionDeleteForeverSubtitle;
+
+  /// No description provided for @chatHideTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Sakriti razgovor?'**
+  String get chatHideTitle;
+
+  /// No description provided for @chatHideBody.
+  ///
+  /// In sr, this message translates to:
+  /// **'Razgovor će biti uklonjen iz tvoje liste. Ponovo se pojavljuje kada stigne nova poruka.'**
+  String get chatHideBody;
+
+  /// No description provided for @chatHiddenSnack.
+  ///
+  /// In sr, this message translates to:
+  /// **'Razgovor je sakriven.'**
+  String get chatHiddenSnack;
+
+  /// No description provided for @chatDeleteForeverTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Obrisati razgovor zauvek?'**
+  String get chatDeleteForeverTitle;
+
+  /// No description provided for @chatDeleteForeverBody.
+  ///
+  /// In sr, this message translates to:
+  /// **'Sve poruke će nestati iz tvog prikaza ovog razgovora. Ako ikad ponovo razgovaraš sa ovom osobom, krećeš iz čistog razgovora. Druga osoba i dalje vidi tvoje prethodne poruke. Ovo se ne može poništiti.'**
+  String get chatDeleteForeverBody;
+
+  /// No description provided for @chatDeletedForeverSnack.
+  ///
+  /// In sr, this message translates to:
+  /// **'Razgovor je obrisan iz tvog prikaza.'**
+  String get chatDeletedForeverSnack;
 }
 
 class _AppLocalizationsDelegate

@@ -83,6 +83,10 @@ class _SendRequestSheetState extends ConsumerState<_SendRequestSheet> {
             fromDisplayName: user.displayName ?? '',
             fromPhotoUrl: user.photoURL,
             toUid: widget.toProfile.uid,
+            // Denormalise recipient info so the sender's own "Sent"
+            // inbox section can render without an extra profile fetch.
+            toDisplayName: widget.toProfile.displayName,
+            toPhotoUrl: widget.toProfile.photoUrl,
             albumId: widget.albumId,
             introMessage: text,
           );
