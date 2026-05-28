@@ -341,8 +341,14 @@ abstract class AppLocalizations {
   /// No description provided for @swapEmptyNoCity.
   ///
   /// In sr, this message translates to:
-  /// **'Postavi grad u svom profilu da pronađeš kolekcionare blizu tebe.'**
+  /// **'Postavi grad u svom profilu da bi filtrirao kolekcionare po gradu.'**
   String get swapEmptyNoCity;
+
+  /// No description provided for @swapEmptyNoCountry.
+  ///
+  /// In sr, this message translates to:
+  /// **'Postavi državu u svom profilu da pronađeš kolekcionare iz svoje zemlje.'**
+  String get swapEmptyNoCountry;
 
   /// No description provided for @swapEmptyNoMissing.
   ///
@@ -355,6 +361,18 @@ abstract class AppLocalizations {
   /// In sr, this message translates to:
   /// **'Trenutno nema podudaranja u {city}. Pokušaj kasnije.'**
   String swapEmptyNoMatches(String city);
+
+  /// No description provided for @swapEmptyNoMatchesCountry.
+  ///
+  /// In sr, this message translates to:
+  /// **'Trenutno nema podudaranja u {country}. Pokušaj kasnije.'**
+  String swapEmptyNoMatchesCountry(String country);
+
+  /// No description provided for @swapFilterCityOnly.
+  ///
+  /// In sr, this message translates to:
+  /// **'Samo {city}'**
+  String swapFilterCityOnly(String city);
 
   /// No description provided for @swapOpenProfile.
   ///

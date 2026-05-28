@@ -140,7 +140,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get swapEmptyNoCity =>
-      'Set your city in profile to find collectors near you.';
+      'Set your city in profile to filter collectors by city.';
+
+  @override
+  String get swapEmptyNoCountry =>
+      'Set your country in profile to find collectors in your country.';
 
   @override
   String get swapEmptyNoMissing =>
@@ -149,6 +153,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String swapEmptyNoMatches(String city) {
     return 'No matches in $city right now. Check back later.';
+  }
+
+  @override
+  String swapEmptyNoMatchesCountry(String country) {
+    return 'No matches in $country right now. Check back later.';
+  }
+
+  @override
+  String swapFilterCityOnly(String city) {
+    return 'Only $city';
   }
 
   @override

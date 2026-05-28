@@ -80,8 +80,19 @@ class ChatRepository {
     return ref.id;
   }
 
-  /// Recipient accepts the request: marks accepted, creates the chat doc,
+  /// Recipient accepts the request: marks accepted, creates the chat doc
+  /// (with the requester's intro message embedded as fields on the doc),
   /// fills in the request's chat_id. Returns the chat id.
+  ///
+  /// **Why intro lives on the chat doc, not in /messages:** the Firestore
+  /// rule for `chats/{chatId}/messages/create` requires
+  /// `sender_id == request.auth.uid`. The recipient (who runs this batch)
+  /// cannot legally write a message with `sender_id = req.fromUser`. So
+  /// we denormalise the intro onto the chat doc itself
+  /// (`intro_message` / `intro_sender` / `intro_at`) and the chat detail
+  /// screen prepends a synthetic `ChatMessage` built from those fields.
+  /// `last_message*` is also seeded so the chat surfaces at the top of
+  /// both users' inboxes right after accept.
   Future<String> acceptRequest({
     required ChatRequest req,
     required ChatParticipant me,
@@ -91,6 +102,9 @@ class ChatRepository {
 
     // Use a batch so the chat doc + request status update happen atomically.
     final batch = _db.batch();
+
+    final intro = req.introMessage.trim();
+    final hasIntro = intro.isNotEmpty;
 
     batch.set(chatDoc, {
       'participants': [req.fromUser, req.toUser]..sort(),
@@ -104,6 +118,16 @@ class ChatRepository {
       },
       'album_id': req.albumId,
       'created_at': FieldValue.serverTimestamp(),
+      if (hasIntro) ...{
+        'intro_message': intro,
+        'intro_sender': req.fromUser,
+        'intro_at': FieldValue.serverTimestamp(),
+        // Seed last_message* so the chat appears at the top of the
+        // inbox with the intro as preview, until someone replies.
+        'last_message': intro,
+        'last_message_at': FieldValue.serverTimestamp(),
+        'last_message_sender': req.fromUser,
+      },
     });
 
     batch.update(_requests.doc(req.id), {

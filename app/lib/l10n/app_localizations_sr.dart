@@ -140,7 +140,11 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get swapEmptyNoCity =>
-      'Postavi grad u svom profilu da pronađeš kolekcionare blizu tebe.';
+      'Postavi grad u svom profilu da bi filtrirao kolekcionare po gradu.';
+
+  @override
+  String get swapEmptyNoCountry =>
+      'Postavi državu u svom profilu da pronađeš kolekcionare iz svoje zemlje.';
 
   @override
   String get swapEmptyNoMissing => 'Sve sličice su u kolekciji — bravo!';
@@ -148,6 +152,16 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String swapEmptyNoMatches(String city) {
     return 'Trenutno nema podudaranja u $city. Pokušaj kasnije.';
+  }
+
+  @override
+  String swapEmptyNoMatchesCountry(String country) {
+    return 'Trenutno nema podudaranja u $country. Pokušaj kasnije.';
+  }
+
+  @override
+  String swapFilterCityOnly(String city) {
+    return 'Samo $city';
   }
 
   @override

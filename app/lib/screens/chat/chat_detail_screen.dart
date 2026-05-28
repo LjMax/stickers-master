@@ -227,7 +227,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                   loading: () => const Center(child: CircularProgressIndicator()),
                   error: (e, _) => Center(child: Text('$e')),
                   data: (messages) => _MessageList(
-                    messages: messages,
+                    messages: _withIntro(widget.chat, messages),
                     myUid: user.uid,
                     scrollCtrl: _scrollCtrl,
                   ),
@@ -278,6 +278,28 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       ),
     );
   }
+}
+
+/// Prepend a synthetic [ChatMessage] for the intro stored on the chat doc.
+///
+/// The intro field gets populated by [ChatRepository.acceptRequest] (since
+/// the recipient can't post a /messages doc with the requester's uid as
+/// sender). If the intro time happens to land after a real reply (clock
+/// skew, edge cases), we still keep it first — it's conceptually the
+/// "message zero" of the conversation.
+List<ChatMessage> _withIntro(Chat chat, List<ChatMessage> messages) {
+  if (!chat.hasIntro) return messages;
+  // Don't duplicate the intro if a real message with the same id slipped in
+  // (defensive; shouldn't happen since we never write to /messages here).
+  const introId = '__intro__';
+  if (messages.any((m) => m.id == introId)) return messages;
+  final synthetic = ChatMessage(
+    id: introId,
+    senderId: chat.introSender!,
+    text: chat.introMessage!,
+    createdAt: chat.introAt ?? chat.createdAt,
+  );
+  return [synthetic, ...messages];
 }
 
 class _MessageList extends StatelessWidget {

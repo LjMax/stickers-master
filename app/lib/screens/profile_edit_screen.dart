@@ -168,6 +168,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                         prefixIcon: const Icon(Icons.public_outlined),
                       ),
                       textCapitalization: TextCapitalization.words,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? l.profileRequiredField
+                          : null,
                     ),
                     const SizedBox(height: 32),
                     FilledButton.icon(

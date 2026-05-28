@@ -101,12 +101,26 @@
   "@swapTitle": {},
   "swapEmptyNotSignedIn": "Prijavi se da vidiš ko može da ti pomogne sa nedostajućim sličicama.",
   "@swapEmptyNotSignedIn": {},
-  "swapEmptyNoCity": "Postavi grad u svom profilu da pronađeš kolekcionare blizu tebe.",
+  "swapEmptyNoCity": "Postavi grad u svom profilu da bi filtrirao kolekcionare po gradu.",
   "@swapEmptyNoCity": {},
+  "swapEmptyNoCountry": "Postavi državu u svom profilu da pronađeš kolekcionare iz svoje zemlje.",
+  "@swapEmptyNoCountry": {},
   "swapEmptyNoMissing": "Sve sličice su u kolekciji — bravo!",
   "@swapEmptyNoMissing": {},
   "swapEmptyNoMatches": "Trenutno nema podudaranja u {city}. Pokušaj kasnije.",
   "@swapEmptyNoMatches": {
+    "placeholders": {
+      "city": { "type": "String" }
+    }
+  },
+  "swapEmptyNoMatchesCountry": "Trenutno nema podudaranja u {country}. Pokušaj kasnije.",
+  "@swapEmptyNoMatchesCountry": {
+    "placeholders": {
+      "country": { "type": "String" }
+    }
+  },
+  "swapFilterCityOnly": "Samo {city}",
+  "@swapFilterCityOnly": {
     "placeholders": {
       "city": { "type": "String" }
     }

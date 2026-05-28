@@ -21,9 +21,9 @@ class SwapRepository {
   ///
   /// Side effects, all non-blocking:
   ///
-  /// 1. **`city_normalized` migration** — older docs may lack the
-  ///    diacritic-stripped/Cyrillic-folded field. If stored value differs
-  ///    from `CityNormalizer.normalize(city)`, we write it back.
+  /// 1. **`city_normalized` + `country_normalized` migration** — older docs
+  ///    may lack the diacritic-stripped/Cyrillic-folded fields. If stored
+  ///    value differs from `CityNormalizer.normalize(...)`, we write it back.
   /// 2. **Auth → profile sync** — keep `photo_url` and `display_name` in
   ///    line with what Firebase Auth knows about the user, so the swap
   ///    area and chat avatars reflect the user's current Google avatar
@@ -40,11 +40,18 @@ class SwapRepository {
 
       final updates = <String, dynamic>{};
 
-      // 1. city_normalized migration
-      final stored = data['city_normalized'] as String?;
-      final desired = CityNormalizer.normalize(profile.city);
-      if (profile.city.isNotEmpty && stored != desired) {
-        updates['city_normalized'] = desired;
+      // 1a. city_normalized migration
+      final storedCity = data['city_normalized'] as String?;
+      final desiredCity = CityNormalizer.normalize(profile.city);
+      if (profile.city.isNotEmpty && storedCity != desiredCity) {
+        updates['city_normalized'] = desiredCity;
+      }
+
+      // 1b. country_normalized migration
+      final storedCountry = data['country_normalized'] as String?;
+      final desiredCountry = CityNormalizer.normalize(profile.country);
+      if (profile.country.isNotEmpty && storedCountry != desiredCountry) {
+        updates['country_normalized'] = desiredCountry;
       }
 
       // 2. auth → profile sync
@@ -73,11 +80,12 @@ class SwapRepository {
   }
 
   /// Create or update my public profile. Writes the normalized form of
-  /// the city alongside the user's original input.
+  /// the city and country alongside the user's original input.
   Future<void> upsertProfile(PublicProfile profile) async {
     await _profileDoc(profile.uid).set({
       ...profile.toJson(),
       'city_normalized': CityNormalizer.normalize(profile.city),
+      'country_normalized': CityNormalizer.normalize(profile.country),
       'last_updated': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
@@ -103,47 +111,58 @@ class SwapRepository {
 
   // ----- Match-finding ------------------------------------------------------
 
-  /// Find swap partners in the same [city] who have duplicates I need.
+  /// Find swap partners who have duplicates I need.
   ///
-  /// Matching is **diacritic- and script-tolerant**: the user's [city] is
-  /// normalised (Cyrillic → Latin, strip diacritics, lowercase) before the
-  /// query. So `"Požarevac"`, `"Pozarevac"`, and `"Пожаревац"` all find
-  /// the same set of partners.
+  /// **Primary filter:** [country]. Always required — the swap area is
+  /// scoped to a single country.
+  ///
+  /// **Optional narrow filter:** [city]. If non-null and non-empty,
+  /// candidates are filtered client-side to only those whose normalized
+  /// city matches mine. When null, the result spans the whole country.
+  ///
+  /// Matching is **diacritic- and script-tolerant**: country and city are
+  /// normalised (Cyrillic → Latin, strip diacritics, lowercase) before
+  /// comparing. So `"Srbija"`, `"Србија"` both match; `"Požarevac"`,
+  /// `"Pozarevac"`, `"Пожаревац"` all match.
   ///
   /// Algorithm:
-  ///   1. Query `public_profiles where city_normalized == myNormalized`.
-  ///      Also (fallback) query `where city == myCityRaw` for any
-  ///      un-migrated profiles still missing `city_normalized`.
+  ///   1. Query `public_profiles where country_normalized == myNormCountry`.
+  ///      Also (fallback) `where country == myRawCountry` for un-migrated
+  ///      profiles still missing `country_normalized`.
   ///   2. Merge the two result sets, deduped by uid, drop self.
-  ///   3. For each, fetch `swap_indexes/{albumId}`, intersect `duplicates`
+  ///   3. If [city] is given, filter to candidates whose
+  ///      `city_normalized` matches my city's normalized form (with a
+  ///      raw-city fallback for un-migrated docs).
+  ///   4. For each, fetch `swap_indexes/{albumId}`, intersect `duplicates`
   ///      with [myMissing] → overlap.
-  ///   4. Drop matches with zero overlap; sort by overlap size desc.
+  ///   5. Drop matches with zero overlap; sort by overlap size desc.
   ///
-  /// Trade-offs: O(N) reads where N = users in same city. Fine for tens of
-  /// users; we'd denormalize via Cloud Function for larger user bases.
+  /// Trade-offs: O(N) reads where N = users in same country. Fine for
+  /// tens to low-hundreds; we'd denormalize via Cloud Function later.
   Future<List<SwapMatch>> findMatches({
     required String myUid,
-    required String city,
+    required String country,
+    String? city,
     required String albumId,
     required Set<String> myMissing,
-    int limit = 100,
+    int limit = 200,
   }) async {
-    if (city.trim().isEmpty || myMissing.isEmpty) return const [];
+    if (country.trim().isEmpty || myMissing.isEmpty) return const [];
 
-    final normalized = CityNormalizer.normalize(city);
+    final countryNorm = CityNormalizer.normalize(country);
 
-    final byNormalizedFut = _db
+    final byCountryNormFut = _db
         .collection('public_profiles')
-        .where('city_normalized', isEqualTo: normalized)
+        .where('country_normalized', isEqualTo: countryNorm)
         .limit(limit)
         .get();
-    final byExactFut = _db
+    final byCountryRawFut = _db
         .collection('public_profiles')
-        .where('city', isEqualTo: city)
+        .where('country', isEqualTo: country)
         .limit(limit)
         .get();
 
-    final results = await Future.wait([byNormalizedFut, byExactFut]);
+    final results = await Future.wait([byCountryNormFut, byCountryRawFut]);
     final candidates =
         <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
     for (final query in results) {
@@ -152,13 +171,29 @@ class SwapRepository {
       }
     }
 
+    // Optional city narrowing.
+    String? cityNorm;
+    if (city != null && city.trim().isNotEmpty) {
+      cityNorm = CityNormalizer.normalize(city);
+    }
+
     final matches = <SwapMatch>[];
     for (final entry in candidates.entries) {
       final candidateUid = entry.key;
       final candidate = entry.value;
       if (candidateUid == myUid) continue; // skip self
 
-      final profile = PublicProfile.fromJson(candidateUid, candidate.data());
+      final data = candidate.data();
+
+      // City narrow filter — fall back to normalising the raw `city`
+      // field for un-migrated profiles.
+      if (cityNorm != null) {
+        final candidateCityNorm = (data['city_normalized'] as String?) ??
+            CityNormalizer.normalize(data['city'] as String? ?? '');
+        if (candidateCityNorm != cityNorm) continue;
+      }
+
+      final profile = PublicProfile.fromJson(candidateUid, data);
 
       final swapIndex = await _swapIndexDoc(candidateUid, albumId).get();
       if (!swapIndex.exists) continue;

@@ -23,13 +23,21 @@ class SwapMatchesResult {
 enum SwapMatchesReason {
   ok,
   notSignedIn,
-  noCitySet,
+  noCountrySet,
+  noCityForFilter,
   noMissing,
   noMatches,
 }
 
+/// Whether the swap matches list is narrowed from the user's country down
+/// to just their own city. Default: false (country-wide).
+///
+/// Toggled by the FilterChip in the Swap tab AppBar area.
+final swapNarrowByCityProvider = StateProvider<bool>((ref) => false);
+
 /// Computes and uploads my duplicates, then queries for partners with
-/// overlap in my city. Refreshed every time the user opens the Swap tab.
+/// overlap. **Primary scope is country**, optionally narrowed to the
+/// user's city via [swapNarrowByCityProvider].
 ///
 /// Use `autoDispose` so the query re-runs when the screen is reopened (gives
 /// the user a fresh list of matches each visit) and stale data is dropped.
@@ -41,8 +49,19 @@ final swapMatchesProvider =
   }
 
   final profile = await ref.watch(myProfileProvider.future);
-  if (profile == null || profile.city.trim().isEmpty) {
-    return const SwapMatchesResult(matches: [], reason: SwapMatchesReason.noCitySet);
+  if (profile == null || profile.country.trim().isEmpty) {
+    return const SwapMatchesResult(
+      matches: [],
+      reason: SwapMatchesReason.noCountrySet,
+    );
+  }
+
+  final narrowByCity = ref.watch(swapNarrowByCityProvider);
+  if (narrowByCity && profile.city.trim().isEmpty) {
+    return const SwapMatchesResult(
+      matches: [],
+      reason: SwapMatchesReason.noCityForFilter,
+    );
   }
 
   final counts = ref.watch(collectionProvider(albumId));
@@ -72,7 +91,8 @@ final swapMatchesProvider =
 
   final found = await repo.findMatches(
     myUid: user.uid,
-    city: profile.city,
+    country: profile.country,
+    city: narrowByCity ? profile.city : null,
     albumId: albumId,
     myMissing: myMissing,
   );

@@ -113,6 +113,9 @@ class Chat {
     this.lastMessageSender,
     this.lastRead = const {},
     this.hiddenFor = const {},
+    this.introMessage,
+    this.introSender,
+    this.introAt,
   });
 
   final String id;
@@ -138,6 +141,24 @@ class Chat {
   /// chat and its messages are kept; sending a new message clears this
   /// set so the chat reappears for everyone.
   final Set<String> hiddenFor;
+
+  /// The intro message the requester typed when they sent the chat request.
+  /// Persisted on the chat doc at accept time because the recipient cannot
+  /// post a message in /messages on the requester's behalf (Firestore rule
+  /// requires `sender_id == request.auth.uid`).
+  ///
+  /// The chat detail screen synthesises a [ChatMessage] from these fields
+  /// and prepends it to the message list.
+  final String? introMessage;
+  final String? introSender;
+  final DateTime? introAt;
+
+  /// True when this chat carries a stored intro message that should be
+  /// rendered as a synthetic first message bubble.
+  bool get hasIntro =>
+      introMessage != null &&
+      introMessage!.isNotEmpty &&
+      introSender != null;
 
   /// True when [uid] has hidden this chat from their inbox.
   bool isHiddenFor(String uid) => hiddenFor.contains(uid);
@@ -215,6 +236,9 @@ class Chat {
       lastMessageSender: data['last_message_sender'] as String?,
       lastRead: lastRead,
       hiddenFor: hiddenFor,
+      introMessage: data['intro_message'] as String?,
+      introSender: data['intro_sender'] as String?,
+      introAt: (data['intro_at'] as Timestamp?)?.toDate(),
     );
   }
 }

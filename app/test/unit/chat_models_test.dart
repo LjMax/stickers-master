@@ -110,6 +110,70 @@ void main() {
     });
   });
 
+  group('Chat intro persistence', () {
+    // The intro message lives on the chat doc itself (not in /messages)
+    // because Firestore rules require sender_id == request.auth.uid on
+    // message create, so the recipient can't post on the requester's
+    // behalf. See ChatRepository.acceptRequest for the full reasoning.
+
+    Chat buildChat(Map<String, dynamic> overrides) {
+      final data = <String, dynamic>{
+        'participants': <String>['me', 'you'],
+        'participant_names': <String, dynamic>{'me': 'Me', 'you': 'You'},
+        'participant_photos': <String, dynamic>{},
+        'album_id': 'panini-fifa-world-cup-2026',
+        'created_at': Timestamp.fromDate(DateTime(2026, 5, 1)),
+        ...overrides,
+      };
+      return Chat.fromMap('me_you', data);
+    }
+
+    test('fromMap parses intro_message, intro_sender, intro_at', () {
+      final introAt = DateTime(2026, 5, 10, 9, 30);
+      final chat = buildChat({
+        'intro_message': 'Hi, want to trade ENG2?',
+        'intro_sender': 'you',
+        'intro_at': Timestamp.fromDate(introAt),
+      });
+      expect(chat.introMessage, 'Hi, want to trade ENG2?');
+      expect(chat.introSender, 'you');
+      expect(chat.introAt, introAt);
+    });
+
+    test('hasIntro is true when both message and sender are present', () {
+      final chat = buildChat({
+        'intro_message': 'Hi!',
+        'intro_sender': 'you',
+        'intro_at': Timestamp.fromDate(DateTime(2026, 5, 10)),
+      });
+      expect(chat.hasIntro, isTrue);
+    });
+
+    test('hasIntro is false when intro fields are missing', () {
+      expect(buildChat({}).hasIntro, isFalse);
+    });
+
+    test('hasIntro is false when intro_message is the empty string', () {
+      final chat = buildChat({
+        'intro_message': '',
+        'intro_sender': 'you',
+      });
+      expect(chat.hasIntro, isFalse);
+    });
+
+    test('hasIntro is false when intro_sender is missing', () {
+      final chat = buildChat({'intro_message': 'Hi!'});
+      expect(chat.hasIntro, isFalse);
+    });
+
+    test('intro fields default to null when absent', () {
+      final chat = buildChat({});
+      expect(chat.introMessage, isNull);
+      expect(chat.introSender, isNull);
+      expect(chat.introAt, isNull);
+    });
+  });
+
   group('ChatRequest.fromMap', () {
     test('parses fields and a known status', () {
       final req = ChatRequest.fromMap('req1', {

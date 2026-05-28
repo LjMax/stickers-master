@@ -62,10 +62,23 @@
 
   "swapTitle": "Swap",
   "swapEmptyNotSignedIn": "Sign in to see who can help with your missing stickers.",
-  "swapEmptyNoCity": "Set your city in profile to find collectors near you.",
+  "swapEmptyNoCity": "Set your city in profile to filter collectors by city.",
+  "swapEmptyNoCountry": "Set your country in profile to find collectors in your country.",
   "swapEmptyNoMissing": "All stickers are in your collection — nice work!",
   "swapEmptyNoMatches": "No matches in {city} right now. Check back later.",
   "@swapEmptyNoMatches": {
+    "placeholders": {
+      "city": { "type": "String" }
+    }
+  },
+  "swapEmptyNoMatchesCountry": "No matches in {country} right now. Check back later.",
+  "@swapEmptyNoMatchesCountry": {
+    "placeholders": {
+      "country": { "type": "String" }
+    }
+  },
+  "swapFilterCityOnly": "Only {city}",
+  "@swapFilterCityOnly": {
     "placeholders": {
       "city": { "type": "String" }
     }

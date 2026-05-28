@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../main.dart' show firebaseReadyProvider;
@@ -13,6 +14,20 @@ import '../widgets/user_avatar.dart';
 import 'blocked_users_screen.dart';
 import 'profile_edit_screen.dart';
 import 'sign_in_screen.dart';
+
+/// Reads the app version (and build number) at runtime from the platform's
+/// package metadata, so the About line in Settings always reflects whatever
+/// is in `pubspec.yaml` without a manual code change on each release.
+final appVersionProvider = FutureProvider<String>((ref) async {
+  final info = await PackageInfo.fromPlatform();
+  // Hide the build number when it duplicates the version (Flutter sets
+  // buildNumber to the part after `+`; if pubspec has just `1.0.1` without
+  // `+N`, buildNumber comes back as the same `1.0.1` on some platforms).
+  if (info.buildNumber.isEmpty || info.buildNumber == info.version) {
+    return info.version;
+  }
+  return '${info.version} (${info.buildNumber})';
+});
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -124,7 +139,11 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
           _SectionHeader(label: l.settingsAbout),
           ListTile(
-            title: Text(l.settingsVersion('0.1.0')),
+            title: Text(
+              l.settingsVersion(
+                ref.watch(appVersionProvider).valueOrNull ?? '—',
+              ),
+            ),
             subtitle: const Text('Stickers Master'),
           ),
         ],

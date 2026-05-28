@@ -15,8 +15,9 @@ import 'chat/send_request_dialog.dart';
 import 'profile_edit_screen.dart';
 import 'sign_in_screen.dart';
 
-/// Swap area: lists collectors in the same city who hold duplicates of
-/// stickers I'm missing.
+/// Swap area: lists collectors in the same country who hold duplicates of
+/// stickers I'm missing. An optional "Only {city}" filter chip narrows the
+/// list to my own city.
 class SwapScreen extends ConsumerWidget {
   const SwapScreen({super.key});
 
@@ -36,29 +37,103 @@ class SwapScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(currentSwapMatchesProvider),
-        child: asyncResult.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          // Hide raw Firestore errors from the user (they sometimes embed
-          // project IDs and aren't actionable). Log to console, render the
-          // friendly "no matches" empty state.
-          error: (e, st) {
-            debugPrint('swap: matches error: $e');
-            return const _EmptyState(reason: SwapMatchesReason.noMatches);
-          },
-          data: (result) {
-            if (result.matches.isEmpty) {
-              return _EmptyState(reason: result.reason);
-            }
-            return ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: result.matches.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 4),
-              itemBuilder: (context, i) => _MatchCard(match: result.matches[i]),
-            );
-          },
-        ),
+      body: Column(
+        children: [
+          const _FilterBar(),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async =>
+                  ref.invalidate(currentSwapMatchesProvider),
+              child: asyncResult.when(
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
+                // Hide raw Firestore errors from the user (they sometimes
+                // embed project IDs and aren't actionable). Log to console,
+                // render the friendly "no matches" empty state.
+                error: (e, st) {
+                  debugPrint('swap: matches error: $e');
+                  return const _EmptyState(reason: SwapMatchesReason.noMatches);
+                },
+                data: (result) {
+                  if (result.matches.isEmpty) {
+                    return _EmptyState(reason: result.reason);
+                  }
+                  return ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemCount: result.matches.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 4),
+                    itemBuilder: (context, i) =>
+                        _MatchCard(match: result.matches[i]),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Row under the AppBar:
+///   - Country label (informational — e.g. "Srbija")
+///   - FilterChip "Only {city}" that, when selected, narrows the matches
+///     to the user's own city.
+///
+/// Hidden when the user has no profile yet (the empty state below will
+/// prompt them to set one up).
+class _FilterBar extends ConsumerWidget {
+  const _FilterBar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final profile = ref.watch(myProfileProvider).valueOrNull;
+    final narrow = ref.watch(swapNarrowByCityProvider);
+
+    final country = profile?.country.trim() ?? '';
+    final city = profile?.city.trim() ?? '';
+
+    // No profile yet — empty state below handles the prompt.
+    if (country.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 12, 4),
+      child: Row(
+        children: [
+          Icon(
+            Icons.public_outlined,
+            size: 18,
+            color: scheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              country,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+            ),
+          ),
+          const Spacer(),
+          if (city.isNotEmpty)
+            FilterChip(
+              selected: narrow,
+              avatar: Icon(
+                Icons.location_city_outlined,
+                size: 18,
+                color: narrow
+                    ? scheme.onSecondaryContainer
+                    : scheme.onSurfaceVariant,
+              ),
+              label: Text(l.swapFilterCityOnly(city)),
+              onSelected: (v) =>
+                  ref.read(swapNarrowByCityProvider.notifier).state = v,
+            ),
+        ],
       ),
     );
   }
@@ -87,7 +162,18 @@ class _EmptyState extends ConsumerWidget {
           label: Text(l.signInTitle),
         );
         break;
-      case SwapMatchesReason.noCitySet:
+      case SwapMatchesReason.noCountrySet:
+        icon = Icons.public_off_outlined;
+        message = l.swapEmptyNoCountry;
+        action = FilledButton.tonalIcon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const ProfileEditScreen()),
+          ),
+          icon: const Icon(Icons.badge_outlined),
+          label: Text(l.swapOpenProfile),
+        );
+        break;
+      case SwapMatchesReason.noCityForFilter:
         icon = Icons.location_off_outlined;
         message = l.swapEmptyNoCity;
         action = FilledButton.tonalIcon(
@@ -105,7 +191,10 @@ class _EmptyState extends ConsumerWidget {
       case SwapMatchesReason.noMatches:
         icon = Icons.swap_horiz;
         final profile = ref.watch(myProfileProvider).valueOrNull;
-        message = l.swapEmptyNoMatches(profile?.city ?? '');
+        final narrow = ref.watch(swapNarrowByCityProvider);
+        message = narrow
+            ? l.swapEmptyNoMatches(profile?.city ?? '')
+            : l.swapEmptyNoMatchesCountry(profile?.country ?? '');
         break;
       case SwapMatchesReason.ok:
         break;
