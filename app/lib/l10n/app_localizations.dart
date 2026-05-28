@@ -530,6 +530,12 @@ abstract class AppLocalizations {
   /// **'Foil'**
   String get filterFoils;
 
+  /// No description provided for @searchStickerTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Pretraži sličicu'**
+  String get searchStickerTitle;
+
   /// No description provided for @searchHint.
   ///
   /// In sr, this message translates to:

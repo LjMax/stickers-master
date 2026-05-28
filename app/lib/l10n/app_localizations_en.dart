@@ -256,6 +256,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterFoils => 'Foils';
 
   @override
+  String get searchStickerTitle => 'Search sticker';
+
+  @override
   String get searchHint => 'Search by code (e.g. ENG12)';
 
   @override

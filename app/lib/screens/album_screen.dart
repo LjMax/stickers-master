@@ -30,33 +30,6 @@ class AlbumScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l.albumPaniniFifa2026),
         centerTitle: false,
-        actions: [
-          // Sticker scanner: opens the camera, OCRs the back of a
-          // sticker, and lets the user add it / mark it as a duplicate.
-          IconButton(
-            tooltip: l.scanStickerTitle,
-            icon: const Icon(Icons.qr_code_scanner),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const StickerScanScreen(),
-              ),
-            ),
-          ),
-          asyncAlbum.maybeWhen(
-            data: (album) => IconButton(
-              tooltip: l.searchHint,
-              icon: const Icon(Icons.search),
-              onPressed: () => showSearch<void>(
-                context: context,
-                delegate: StickerSearchDelegate(
-                  album: album,
-                  hintText: l.searchHint,
-                ),
-              ),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
       ),
       body: asyncAlbum.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -96,6 +69,7 @@ class _AlbumBody extends ConsumerWidget {
 
     final slivers = <Widget>[
       SliverToBoxAdapter(child: _ProgressCard(album: album, counts: counts)),
+      SliverToBoxAdapter(child: _AlbumActions(album: album)),
       const SliverToBoxAdapter(child: FilterChipRow()),
       if (!anyVisible)
         SliverFillRemaining(
@@ -137,6 +111,61 @@ class _AlbumBody extends ConsumerWidget {
     ];
 
     return CustomScrollView(slivers: slivers);
+  }
+}
+
+/// Side-by-side "Scan sticker" + "Search" CTAs shown at the top of the
+/// album tab. Styled to match the share-list button on the stats screen,
+/// but split into two equal-width columns so both actions are one tap
+/// away without crowding the AppBar.
+class _AlbumActions extends StatelessWidget {
+  const _AlbumActions({required this.album});
+
+  final Album album;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: FilledButton.tonalIcon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const StickerScanScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.document_scanner_outlined),
+              label: Text(
+                l.scanStickerTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: FilledButton.tonalIcon(
+              onPressed: () => showSearch<void>(
+                context: context,
+                delegate: StickerSearchDelegate(
+                  album: album,
+                  hintText: l.searchHint,
+                ),
+              ),
+              icon: const Icon(Icons.search),
+              label: Text(
+                l.searchStickerTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

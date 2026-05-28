@@ -255,6 +255,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get filterFoils => 'Foil';
 
   @override
+  String get searchStickerTitle => 'Pretraži sličicu';
+
+  @override
   String get searchHint => 'Pretraži po šifri (npr. ENG12)';
 
   @override

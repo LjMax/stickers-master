@@ -124,6 +124,7 @@
   "filterFoils": "Foils",
 
   "albumFilterEmpty": "No stickers match this filter",
+  "searchStickerTitle": "Search sticker",
   "searchHint": "Search by code (e.g. ENG12)",
   "searchNoResults": "No results",
   "searchResultCount": "{count} results",

@@ -189,6 +189,8 @@
   "filterFoils": "Foil",
   "@filterFoils": {},
 
+  "searchStickerTitle": "Pretraži sličicu",
+  "@searchStickerTitle": {},
   "searchHint": "Pretraži po šifri (npr. ENG12)",
   "@searchHint": {},
   "albumFilterEmpty": "Nijedna sličica ne odgovara filteru",
