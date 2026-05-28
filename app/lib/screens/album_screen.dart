@@ -12,6 +12,7 @@ import '../widgets/collapsible_header.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/filter_chip_row.dart';
 import '../widgets/group_section.dart';
+import 'scan/sticker_scan_screen.dart';
 import 'sticker_search.dart';
 
 /// Main browse screen — progress card at the top, filter row, then
@@ -30,6 +31,17 @@ class AlbumScreen extends ConsumerWidget {
         title: Text(l.albumPaniniFifa2026),
         centerTitle: false,
         actions: [
+          // Sticker scanner: opens the camera, OCRs the back of a
+          // sticker, and lets the user add it / mark it as a duplicate.
+          IconButton(
+            tooltip: l.scanStickerTitle,
+            icon: const Icon(Icons.qr_code_scanner),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const StickerScanScreen(),
+              ),
+            ),
+          ),
           asyncAlbum.maybeWhen(
             data: (album) => IconButton(
               tooltip: l.searchHint,

@@ -9,6 +9,7 @@ import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/preferences_provider.dart';
 import '../providers/profile_provider.dart';
+import '../providers/scan_settings_provider.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/user_avatar.dart';
 import 'blocked_users_screen.dart';
@@ -135,6 +136,16 @@ class SettingsScreen extends ConsumerWidget {
             groupValue: themeMode,
             onChanged: (v) =>
                 v == null ? null : ref.read(themeProvider.notifier).set(v),
+          ),
+          const Divider(),
+          _SectionHeader(label: l.scanStickerTitle),
+          SwitchListTile(
+            title: Text(l.settingsScanAutoAdvance),
+            subtitle: Text(l.settingsScanAutoAdvanceSubtitle),
+            secondary: const Icon(Icons.fast_forward_outlined),
+            value: ref.watch(scanSettingsProvider).autoAdvance,
+            onChanged: (v) =>
+                ref.read(scanSettingsProvider.notifier).setAutoAdvance(v),
           ),
           const Divider(),
           _SectionHeader(label: l.settingsAbout),

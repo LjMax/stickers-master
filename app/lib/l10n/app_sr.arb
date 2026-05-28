@@ -231,6 +231,55 @@
     }
   },
 
+  "scanStickerTitle": "Skeniraj sličicu",
+  "@scanStickerTitle": {},
+  "scanInstruction": "Usmeri kameru na poleđinu sličice",
+  "@scanInstruction": {},
+  "scanAutoAdvanceTooltip": "Automatski nastavi posle dodavanja",
+  "@scanAutoAdvanceTooltip": {},
+  "scanPermissionDeniedTitle": "Pristup kameri je odbijen",
+  "@scanPermissionDeniedTitle": {},
+  "scanPermissionDeniedBody": "Dozvoli pristup kameri u podešavanjima telefona da bi skenirao sličice.",
+  "@scanPermissionDeniedBody": {},
+  "scanCameraErrorTitle": "Kamera nije dostupna",
+  "@scanCameraErrorTitle": {},
+  "scanCameraErrorBody": "Nije moguće otvoriti kameru. Pokušaj ponovo ili restartuj aplikaciju.",
+  "@scanCameraErrorBody": {},
+  "scanStatusMissing": "Nedostaje",
+  "@scanStatusMissing": {},
+  "scanStatusHave": "Već je u albumu",
+  "@scanStatusHave": {},
+  "scanStatusHaveWithDuplicates": "Već je u albumu · {count, plural, one{{count} duplikat} few{{count} duplikata} other{{count} duplikata}}",
+  "@scanStatusHaveWithDuplicates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanActionAddToAlbum": "Dodaj u album",
+  "@scanActionAddToAlbum": {},
+  "scanActionAddDuplicate": "Dodaj kao duplikat",
+  "@scanActionAddDuplicate": {},
+  "scanNextSticker": "Skeniraj sledeću sličicu",
+  "@scanNextSticker": {},
+  "scanSkipThis": "Preskoči ovu",
+  "@scanSkipThis": {},
+  "scanAddedSummary": "Dodato {code}",
+  "@scanAddedSummary": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "scanAddedDuplicateSummary": "Dodato {code} ({count, plural, one{{count} duplikat} few{{count} duplikata} other{{count} duplikata}})",
+  "@scanAddedDuplicateSummary": {
+    "placeholders": {
+      "code": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "settingsScanAutoAdvance": "Automatski nastavi skeniranje",
+  "@settingsScanAutoAdvance": {},
+  "settingsScanAutoAdvanceSubtitle": "Nastavi skeniranje automatski nakon što je sličica dodata.",
+  "@settingsScanAutoAdvanceSubtitle": {},
   "scanPageTooltip": "Skeniraj stranicu",
   "@scanPageTooltip": {},
   "scanReviewTitle": "Pregled stranice — {team}",

@@ -69,6 +69,18 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+
+            // Custom rules layered on top of the Flutter/Android defaults.
+            // The file is small and only carries -dontwarn directives for
+            // ML Kit script recognisers we don't bundle (Chinese/Japanese/
+            // Korean/Devanagari). Without these R8 aborts the release
+            // build because the google_mlkit_text_recognition plugin code
+            // references all five script options even when only Latin is
+            // selected at runtime.
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }

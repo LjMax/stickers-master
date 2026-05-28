@@ -300,6 +300,83 @@ class AppLocalizationsSr extends AppLocalizations {
   }
 
   @override
+  String get scanStickerTitle => 'Skeniraj sličicu';
+
+  @override
+  String get scanInstruction => 'Usmeri kameru na poleđinu sličice';
+
+  @override
+  String get scanAutoAdvanceTooltip => 'Automatski nastavi posle dodavanja';
+
+  @override
+  String get scanPermissionDeniedTitle => 'Pristup kameri je odbijen';
+
+  @override
+  String get scanPermissionDeniedBody =>
+      'Dozvoli pristup kameri u podešavanjima telefona da bi skenirao sličice.';
+
+  @override
+  String get scanCameraErrorTitle => 'Kamera nije dostupna';
+
+  @override
+  String get scanCameraErrorBody =>
+      'Nije moguće otvoriti kameru. Pokušaj ponovo ili restartuj aplikaciju.';
+
+  @override
+  String get scanStatusMissing => 'Nedostaje';
+
+  @override
+  String get scanStatusHave => 'Već je u albumu';
+
+  @override
+  String scanStatusHaveWithDuplicates(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count duplikata',
+      few: '$count duplikata',
+      one: '$count duplikat',
+    );
+    return 'Već je u albumu · $_temp0';
+  }
+
+  @override
+  String get scanActionAddToAlbum => 'Dodaj u album';
+
+  @override
+  String get scanActionAddDuplicate => 'Dodaj kao duplikat';
+
+  @override
+  String get scanNextSticker => 'Skeniraj sledeću sličicu';
+
+  @override
+  String get scanSkipThis => 'Preskoči ovu';
+
+  @override
+  String scanAddedSummary(String code) {
+    return 'Dodato $code';
+  }
+
+  @override
+  String scanAddedDuplicateSummary(String code, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count duplikata',
+      few: '$count duplikata',
+      one: '$count duplikat',
+    );
+    return 'Dodato $code ($_temp0)';
+  }
+
+  @override
+  String get settingsScanAutoAdvance => 'Automatski nastavi skeniranje';
+
+  @override
+  String get settingsScanAutoAdvanceSubtitle =>
+      'Nastavi skeniranje automatski nakon što je sličica dodata.';
+
+  @override
   String get scanPageTooltip => 'Skeniraj stranicu';
 
   @override

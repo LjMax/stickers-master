@@ -155,6 +155,40 @@
     }
   },
 
+  "scanStickerTitle": "Scan sticker",
+  "scanInstruction": "Point camera at the back of a sticker",
+  "scanAutoAdvanceTooltip": "Auto-advance after adding",
+  "scanPermissionDeniedTitle": "Camera permission denied",
+  "scanPermissionDeniedBody": "Allow camera access in your phone settings to scan stickers.",
+  "scanCameraErrorTitle": "Camera unavailable",
+  "scanCameraErrorBody": "Couldn't open the camera. Try again or restart the app.",
+  "scanStatusMissing": "Missing",
+  "scanStatusHave": "Already in album",
+  "scanStatusHaveWithDuplicates": "Already in album · {count, plural, one{{count} duplicate} other{{count} duplicates}}",
+  "@scanStatusHaveWithDuplicates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "scanActionAddToAlbum": "Add to album",
+  "scanActionAddDuplicate": "Add as duplicate",
+  "scanNextSticker": "Scan next sticker",
+  "scanSkipThis": "Skip this one",
+  "scanAddedSummary": "Added {code}",
+  "@scanAddedSummary": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "scanAddedDuplicateSummary": "Added {code} ({count, plural, one{{count} duplicate} other{{count} duplicates}})",
+  "@scanAddedDuplicateSummary": {
+    "placeholders": {
+      "code": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "settingsScanAutoAdvance": "Auto-advance scanner",
+  "settingsScanAutoAdvanceSubtitle": "Resume scanning automatically after each sticker is added.",
   "scanPageTooltip": "Scan page",
   "scanReviewTitle": "Page review — {team}",
   "@scanReviewTitle": {

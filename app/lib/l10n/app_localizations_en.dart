@@ -301,6 +301,81 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get scanStickerTitle => 'Scan sticker';
+
+  @override
+  String get scanInstruction => 'Point camera at the back of a sticker';
+
+  @override
+  String get scanAutoAdvanceTooltip => 'Auto-advance after adding';
+
+  @override
+  String get scanPermissionDeniedTitle => 'Camera permission denied';
+
+  @override
+  String get scanPermissionDeniedBody =>
+      'Allow camera access in your phone settings to scan stickers.';
+
+  @override
+  String get scanCameraErrorTitle => 'Camera unavailable';
+
+  @override
+  String get scanCameraErrorBody =>
+      'Couldn\'t open the camera. Try again or restart the app.';
+
+  @override
+  String get scanStatusMissing => 'Missing';
+
+  @override
+  String get scanStatusHave => 'Already in album';
+
+  @override
+  String scanStatusHaveWithDuplicates(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count duplicates',
+      one: '$count duplicate',
+    );
+    return 'Already in album · $_temp0';
+  }
+
+  @override
+  String get scanActionAddToAlbum => 'Add to album';
+
+  @override
+  String get scanActionAddDuplicate => 'Add as duplicate';
+
+  @override
+  String get scanNextSticker => 'Scan next sticker';
+
+  @override
+  String get scanSkipThis => 'Skip this one';
+
+  @override
+  String scanAddedSummary(String code) {
+    return 'Added $code';
+  }
+
+  @override
+  String scanAddedDuplicateSummary(String code, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count duplicates',
+      one: '$count duplicate',
+    );
+    return 'Added $code ($_temp0)';
+  }
+
+  @override
+  String get settingsScanAutoAdvance => 'Auto-advance scanner';
+
+  @override
+  String get settingsScanAutoAdvanceSubtitle =>
+      'Resume scanning automatically after each sticker is added.';
+
+  @override
   String get scanPageTooltip => 'Scan page';
 
   @override

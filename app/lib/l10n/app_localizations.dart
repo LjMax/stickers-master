@@ -608,6 +608,114 @@ abstract class AppLocalizations {
   /// **'Stanje: {owned} / {total} ({percent}%)'**
   String shareProgress(int owned, int total, String percent);
 
+  /// No description provided for @scanStickerTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Skeniraj sličicu'**
+  String get scanStickerTitle;
+
+  /// No description provided for @scanInstruction.
+  ///
+  /// In sr, this message translates to:
+  /// **'Usmeri kameru na poleđinu sličice'**
+  String get scanInstruction;
+
+  /// No description provided for @scanAutoAdvanceTooltip.
+  ///
+  /// In sr, this message translates to:
+  /// **'Automatski nastavi posle dodavanja'**
+  String get scanAutoAdvanceTooltip;
+
+  /// No description provided for @scanPermissionDeniedTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Pristup kameri je odbijen'**
+  String get scanPermissionDeniedTitle;
+
+  /// No description provided for @scanPermissionDeniedBody.
+  ///
+  /// In sr, this message translates to:
+  /// **'Dozvoli pristup kameri u podešavanjima telefona da bi skenirao sličice.'**
+  String get scanPermissionDeniedBody;
+
+  /// No description provided for @scanCameraErrorTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Kamera nije dostupna'**
+  String get scanCameraErrorTitle;
+
+  /// No description provided for @scanCameraErrorBody.
+  ///
+  /// In sr, this message translates to:
+  /// **'Nije moguće otvoriti kameru. Pokušaj ponovo ili restartuj aplikaciju.'**
+  String get scanCameraErrorBody;
+
+  /// No description provided for @scanStatusMissing.
+  ///
+  /// In sr, this message translates to:
+  /// **'Nedostaje'**
+  String get scanStatusMissing;
+
+  /// No description provided for @scanStatusHave.
+  ///
+  /// In sr, this message translates to:
+  /// **'Već je u albumu'**
+  String get scanStatusHave;
+
+  /// No description provided for @scanStatusHaveWithDuplicates.
+  ///
+  /// In sr, this message translates to:
+  /// **'Već je u albumu · {count, plural, one{{count} duplikat} few{{count} duplikata} other{{count} duplikata}}'**
+  String scanStatusHaveWithDuplicates(int count);
+
+  /// No description provided for @scanActionAddToAlbum.
+  ///
+  /// In sr, this message translates to:
+  /// **'Dodaj u album'**
+  String get scanActionAddToAlbum;
+
+  /// No description provided for @scanActionAddDuplicate.
+  ///
+  /// In sr, this message translates to:
+  /// **'Dodaj kao duplikat'**
+  String get scanActionAddDuplicate;
+
+  /// No description provided for @scanNextSticker.
+  ///
+  /// In sr, this message translates to:
+  /// **'Skeniraj sledeću sličicu'**
+  String get scanNextSticker;
+
+  /// No description provided for @scanSkipThis.
+  ///
+  /// In sr, this message translates to:
+  /// **'Preskoči ovu'**
+  String get scanSkipThis;
+
+  /// No description provided for @scanAddedSummary.
+  ///
+  /// In sr, this message translates to:
+  /// **'Dodato {code}'**
+  String scanAddedSummary(String code);
+
+  /// No description provided for @scanAddedDuplicateSummary.
+  ///
+  /// In sr, this message translates to:
+  /// **'Dodato {code} ({count, plural, one{{count} duplikat} few{{count} duplikata} other{{count} duplikata}})'**
+  String scanAddedDuplicateSummary(String code, int count);
+
+  /// No description provided for @settingsScanAutoAdvance.
+  ///
+  /// In sr, this message translates to:
+  /// **'Automatski nastavi skeniranje'**
+  String get settingsScanAutoAdvance;
+
+  /// No description provided for @settingsScanAutoAdvanceSubtitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Nastavi skeniranje automatski nakon što je sličica dodata.'**
+  String get settingsScanAutoAdvanceSubtitle;
+
   /// No description provided for @scanPageTooltip.
   ///
   /// In sr, this message translates to:
