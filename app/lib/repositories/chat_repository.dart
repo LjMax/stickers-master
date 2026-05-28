@@ -165,29 +165,49 @@ class ChatRepository {
     final intro = req.introMessage.trim();
     final hasIntro = intro.isNotEmpty;
 
-    batch.set(chatDoc, {
-      'participants': [req.fromUser, req.toUser]..sort(),
-      'participant_names': {
-        req.fromUser: req.fromDisplayName,
-        req.toUser: me.displayName,
+    // CRITICAL: use SetOptions(merge: true). Without merge, this set()
+    // overwrites the entire chat doc — wiping `deleted_at_for`,
+    // `last_read`, and `hidden_for`. That bug (caught in v1.0.5
+    // closed testing) made a new accepted request between the same
+    // pair "resurrect" the old conversation: both users' delete-forever
+    // cutoffs vanished, and the old /messages history came flooding
+    // back with the new intro pinned to the top.
+    //
+    // We DO need to reset `hidden_for` so the chat reappears in both
+    // users' inboxes (a new accept = a fresh start), so we set it
+    // explicitly to []. `deleted_at_for` and `last_read` are preserved
+    // by the merge — those are per-user state and survive across
+    // conversation lifecycles.
+    batch.set(
+      chatDoc,
+      {
+        'participants': [req.fromUser, req.toUser]..sort(),
+        'participant_names': {
+          req.fromUser: req.fromDisplayName,
+          req.toUser: me.displayName,
+        },
+        'participant_photos': {
+          req.fromUser: req.fromPhotoUrl,
+          req.toUser: me.photoUrl,
+        },
+        'album_id': req.albumId,
+        'created_at': FieldValue.serverTimestamp(),
+        // Reset visibility for the new conversation. Anyone who soft-hid
+        // the chat sees it again in their inbox.
+        'hidden_for': <String>[],
+        if (hasIntro) ...{
+          'intro_message': intro,
+          'intro_sender': req.fromUser,
+          'intro_at': FieldValue.serverTimestamp(),
+          // Seed last_message* so the chat appears at the top of the
+          // inbox with the intro as preview, until someone replies.
+          'last_message': intro,
+          'last_message_at': FieldValue.serverTimestamp(),
+          'last_message_sender': req.fromUser,
+        },
       },
-      'participant_photos': {
-        req.fromUser: req.fromPhotoUrl,
-        req.toUser: me.photoUrl,
-      },
-      'album_id': req.albumId,
-      'created_at': FieldValue.serverTimestamp(),
-      if (hasIntro) ...{
-        'intro_message': intro,
-        'intro_sender': req.fromUser,
-        'intro_at': FieldValue.serverTimestamp(),
-        // Seed last_message* so the chat appears at the top of the
-        // inbox with the intro as preview, until someone replies.
-        'last_message': intro,
-        'last_message_at': FieldValue.serverTimestamp(),
-        'last_message_sender': req.fromUser,
-      },
-    });
+      SetOptions(merge: true),
+    );
 
     batch.update(_requests.doc(req.id), {
       'status': 'accepted',
