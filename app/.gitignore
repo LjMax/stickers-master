@@ -12,6 +12,9 @@
 .swiftpm/
 migrate_working_dir/
 
+# Local agent / Claude Code session metadata — never commit
+.claude/
+
 # IntelliJ related
 *.iml
 *.ipr
