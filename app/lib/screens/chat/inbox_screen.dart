@@ -8,6 +8,7 @@ import '../../models/chat_models.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../providers/moderation_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/user_avatar.dart';
 import 'chat_detail_screen.dart';
@@ -310,12 +311,25 @@ class _RequestTileState extends ConsumerState<_RequestTile> {
     setState(() => _busy = true);
     try {
       final user = ref.read(currentUserProvider)!;
+      // Same fix as send_request_dialog: prefer the swap-profile name
+      // (the publicly-visible identity) over Firebase Auth's
+      // displayName. Anonymous/guest users have a null auth
+      // displayName, and any user can override their Google name in
+      // Settings → Profile.
+      final myProfile = ref.read(myProfileProvider).valueOrNull;
+      final myName = (myProfile != null &&
+              myProfile.displayName.trim().isNotEmpty)
+          ? myProfile.displayName
+          : (user.displayName ?? '');
+      final myPhoto = (myProfile?.photoUrl?.isNotEmpty ?? false)
+          ? myProfile!.photoUrl
+          : user.photoURL;
       final chatId = await ref.read(chatRepositoryProvider).acceptRequest(
             req: widget.request,
             me: ChatParticipant(
               uid: user.uid,
-              displayName: user.displayName ?? '',
-              photoUrl: user.photoURL,
+              displayName: myName,
+              photoUrl: myPhoto,
             ),
           );
       if (!mounted) return;

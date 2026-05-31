@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/public_profile.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/chat_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../repositories/chat_repository.dart';
 
 const int _maxLen = 280;
@@ -78,10 +79,24 @@ class _SendRequestSheetState extends ConsumerState<_SendRequestSheet> {
         return;
       }
 
+      // Prefer the sender's *swap profile* name over the Firebase Auth
+      // displayName. Anonymous (guest) users have a null auth displayName,
+      // and any user can override their Google name in Settings → Profile.
+      // The swap profile is the publicly-visible identity in this app, so
+      // it's what other users should see on the request.
+      final myProfile = ref.read(myProfileProvider).valueOrNull;
+      final myName = (myProfile != null &&
+              myProfile.displayName.trim().isNotEmpty)
+          ? myProfile.displayName
+          : (user.displayName ?? '');
+      final myPhoto = (myProfile?.photoUrl?.isNotEmpty ?? false)
+          ? myProfile!.photoUrl
+          : user.photoURL;
+
       await repo.sendRequest(
             fromUid: user.uid,
-            fromDisplayName: user.displayName ?? '',
-            fromPhotoUrl: user.photoURL,
+            fromDisplayName: myName,
+            fromPhotoUrl: myPhoto,
             toUid: widget.toProfile.uid,
             // Denormalise recipient info so the sender's own "Sent"
             // inbox section can render without an extra profile fetch.
