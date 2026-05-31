@@ -710,6 +710,54 @@ abstract class AppLocalizations {
   /// **'Dodato {code} ({count, plural, one{{count} duplikat} few{{count} duplikata} other{{count} duplikata}})'**
   String scanAddedDuplicateSummary(String code, int count);
 
+  /// No description provided for @missingListTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Prikaži šta mi fali'**
+  String get missingListTitle;
+
+  /// No description provided for @missingListSummary.
+  ///
+  /// In sr, this message translates to:
+  /// **'{count, plural, one{{count} sličica fali} few{{count} sličice fale} other{{count} sličica fali}}'**
+  String missingListSummary(int count);
+
+  /// No description provided for @missingListCopy.
+  ///
+  /// In sr, this message translates to:
+  /// **'Kopiraj'**
+  String get missingListCopy;
+
+  /// No description provided for @missingListCopied.
+  ///
+  /// In sr, this message translates to:
+  /// **'Lista je kopirana.'**
+  String get missingListCopied;
+
+  /// No description provided for @missingListMarkedFound.
+  ///
+  /// In sr, this message translates to:
+  /// **'Dodato {code} u album'**
+  String missingListMarkedFound(String code);
+
+  /// No description provided for @actionUndo.
+  ///
+  /// In sr, this message translates to:
+  /// **'Poništi'**
+  String get actionUndo;
+
+  /// No description provided for @missingListCompleteTitle.
+  ///
+  /// In sr, this message translates to:
+  /// **'Album je popunjen!'**
+  String get missingListCompleteTitle;
+
+  /// No description provided for @missingListCompleteBody.
+  ///
+  /// In sr, this message translates to:
+  /// **'Imaš sve sličice. Bravo.'**
+  String get missingListCompleteBody;
+
   /// No description provided for @settingsScanAutoAdvance.
   ///
   /// In sr, this message translates to:

@@ -1,7 +1,7 @@
 name: stickers_master
 description: "Sticker album collection tracker — Panini FIFA World Cup 2026 and beyond."
 publish_to: 'none'
-version: 1.0.7+9
+version: 1.0.8+11
 
 environment:
   sdk: ^3.5.0
@@ -52,6 +52,12 @@ dependencies:
   # text recognizer single-flight on each frame.
   camera: ^0.11.0+2
   google_mlkit_text_recognition: ^0.15.0
+
+  # Country flag SVGs for the team headers in the album. Codes are
+  # ISO 3166-1 alpha-2, plus gb-eng / gb-sct / gb-wls for the four
+  # home nations — see lib/services/team_flag_map.dart for the
+  # FIFA-to-package-code mapping for all 48 WC 2026 teams.
+  country_flags: ^3.2.0
 
 dev_dependencies:
   flutter_test:

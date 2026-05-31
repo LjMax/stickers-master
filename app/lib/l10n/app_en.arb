@@ -188,6 +188,24 @@
       "count": { "type": "int" }
     }
   },
+  "missingListTitle": "Show what I'm missing",
+  "missingListSummary": "{count, plural, one{{count} missing sticker} other{{count} missing stickers}}",
+  "@missingListSummary": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "missingListCopy": "Copy",
+  "missingListCopied": "List copied to clipboard.",
+  "missingListMarkedFound": "Added {code} to your album",
+  "@missingListMarkedFound": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "actionUndo": "Undo",
+  "missingListCompleteTitle": "Album complete!",
+  "missingListCompleteBody": "You have every sticker. Nice work.",
   "settingsScanAutoAdvance": "Auto-advance scanner",
   "settingsScanAutoAdvanceSubtitle": "Resume scanning automatically after each sticker is added.",
   "scanPageTooltip": "Scan page",

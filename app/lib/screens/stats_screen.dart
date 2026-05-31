@@ -9,6 +9,7 @@ import '../providers/collection_provider.dart';
 import '../providers/locale_provider.dart';
 import '../repositories/share_list.dart';
 import '../theme/app_theme.dart';
+import 'missing_list_screen.dart';
 
 /// Per-group breakdown of progress + share-list export.
 class StatsScreen extends ConsumerWidget {
@@ -35,7 +36,7 @@ class StatsScreen extends ConsumerWidget {
               counts.values.fold<int>(0, (sum, c) => sum + (c > 1 ? c - 1 : 0));
 
           return ListView.builder(
-            itemCount: groupCodes.length + 2,
+            itemCount: groupCodes.length + 3,
             itemBuilder: (context, index) {
               if (index == 0) {
                 return _OverallCard(
@@ -45,6 +46,9 @@ class StatsScreen extends ConsumerWidget {
                 );
               }
               if (index == 1) {
+                return const _MissingListButton();
+              }
+              if (index == 2) {
                 return _ShareButton(
                   onPressed: () => _shareSwapList(
                     context: context,
@@ -55,7 +59,7 @@ class StatsScreen extends ConsumerWidget {
                   ),
                 );
               }
-              final code = groupCodes[index - 2];
+              final code = groupCodes[index - 3];
               final stickers = groups[code]!;
               final label = pickLocalized(
                 locale,
@@ -192,6 +196,34 @@ class _ShareButton extends StatelessWidget {
           onPressed: onPressed,
           icon: const Icon(Icons.share_outlined),
           label: Text(l.shareOpenSheet),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Show what I'm missing" CTA on the stats screen — sits right above
+/// the share-list button. Same destination as the equivalent button
+/// on the album tab; mirrored here so it's reachable wherever the
+/// user is thinking about their collection.
+class _MissingListButton extends StatelessWidget {
+  const _MissingListButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: FilledButton.tonalIcon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const MissingListScreen(),
+            ),
+          ),
+          icon: const Icon(Icons.checklist_outlined),
+          label: Text(l.missingListTitle),
         ),
       ),
     );

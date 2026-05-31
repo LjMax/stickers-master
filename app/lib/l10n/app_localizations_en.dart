@@ -372,6 +372,40 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get missingListTitle => 'Show what I\'m missing';
+
+  @override
+  String missingListSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count missing stickers',
+      one: '$count missing sticker',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingListCopy => 'Copy';
+
+  @override
+  String get missingListCopied => 'List copied to clipboard.';
+
+  @override
+  String missingListMarkedFound(String code) {
+    return 'Added $code to your album';
+  }
+
+  @override
+  String get actionUndo => 'Undo';
+
+  @override
+  String get missingListCompleteTitle => 'Album complete!';
+
+  @override
+  String get missingListCompleteBody => 'You have every sticker. Nice work.';
+
+  @override
   String get settingsScanAutoAdvance => 'Auto-advance scanner';
 
   @override

@@ -373,6 +373,41 @@ class AppLocalizationsSr extends AppLocalizations {
   }
 
   @override
+  String get missingListTitle => 'Prikaži šta mi fali';
+
+  @override
+  String missingListSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sličica fali',
+      few: '$count sličice fale',
+      one: '$count sličica fali',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missingListCopy => 'Kopiraj';
+
+  @override
+  String get missingListCopied => 'Lista je kopirana.';
+
+  @override
+  String missingListMarkedFound(String code) {
+    return 'Dodato $code u album';
+  }
+
+  @override
+  String get actionUndo => 'Poništi';
+
+  @override
+  String get missingListCompleteTitle => 'Album je popunjen!';
+
+  @override
+  String get missingListCompleteBody => 'Imaš sve sličice. Bravo.';
+
+  @override
   String get settingsScanAutoAdvance => 'Automatski nastavi skeniranje';
 
   @override

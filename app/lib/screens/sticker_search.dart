@@ -8,6 +8,7 @@ import '../providers/collection_provider.dart';
 import '../providers/locale_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/team_flag.dart';
 import 'sticker_edit_sheet.dart';
 
 /// Full-screen search for stickers by their code. Type "ENG" to see all
@@ -144,7 +145,22 @@ class _ResultTile extends StatelessWidget {
           style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
         ),
       ),
-      title: Text(groupLabel),
+      title: Row(
+        children: [
+          // Flag for the team this sticker belongs to. For non-team
+          // stickers (specials / cover) the widget renders a neutral
+          // pill, which still aligns with the title baseline.
+          TeamFlag(teamCode: sticker.groupCode, width: 22, height: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              groupLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
       subtitle: Text('$subcat$wcSuffix'),
       trailing: count == 0
           ? Icon(

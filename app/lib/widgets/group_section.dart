@@ -9,6 +9,7 @@ import '../providers/locale_provider.dart';
 import '../screens/sticker_edit_sheet.dart';
 import '../services/scan_launcher.dart';
 import 'sticker_tile.dart';
+import 'team_flag.dart';
 
 /// Renders one team's stickers (or any single sticker group) as a small
 /// header followed by a wrap of [StickerTile]s.
@@ -65,6 +66,14 @@ class GroupSection extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(20, 10, 12, 4),
             child: Row(
               children: [
+                // Flag in front of the team name. fifaToFlagCode maps
+                // FIFA 3-letter codes to ISO alpha-2 (or gb-eng / gb-sct
+                // for home nations). The widget falls back to a neutral
+                // pill if the code isn't mapped — so non-team groups
+                // like 'FWC' don't crash anything (they don't render
+                // this header at all today, but the safety net stays).
+                TeamFlag(teamCode: groupCode),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     title,

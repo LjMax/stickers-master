@@ -12,6 +12,7 @@ import '../widgets/collapsible_header.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/filter_chip_row.dart';
 import '../widgets/group_section.dart';
+import 'missing_list_screen.dart';
 import 'scan/sticker_scan_screen.dart';
 import 'sticker_search.dart';
 
@@ -70,6 +71,7 @@ class _AlbumBody extends ConsumerWidget {
     final slivers = <Widget>[
       SliverToBoxAdapter(child: _ProgressCard(album: album, counts: counts)),
       SliverToBoxAdapter(child: _AlbumActions(album: album)),
+      const SliverToBoxAdapter(child: _MissingListButton()),
       const SliverToBoxAdapter(child: FilterChipRow()),
       if (!anyVisible)
         SliverFillRemaining(
@@ -164,6 +166,33 @@ class _AlbumActions extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Full-width "Show what I'm missing" button — sits beneath the
+/// scan/search row on the album tab so the same destination is
+/// reachable from both album and stats tabs.
+class _MissingListButton extends StatelessWidget {
+  const _MissingListButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: FilledButton.tonalIcon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const MissingListScreen(),
+            ),
+          ),
+          icon: const Icon(Icons.checklist_outlined),
+          label: Text(l.missingListTitle),
+        ),
       ),
     );
   }

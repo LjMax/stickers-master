@@ -278,6 +278,30 @@
       "count": { "type": "int" }
     }
   },
+  "missingListTitle": "Prikaži šta mi fali",
+  "@missingListTitle": {},
+  "missingListSummary": "{count, plural, one{{count} sličica fali} few{{count} sličice fale} other{{count} sličica fali}}",
+  "@missingListSummary": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "missingListCopy": "Kopiraj",
+  "@missingListCopy": {},
+  "missingListCopied": "Lista je kopirana.",
+  "@missingListCopied": {},
+  "missingListMarkedFound": "Dodato {code} u album",
+  "@missingListMarkedFound": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "actionUndo": "Poništi",
+  "@actionUndo": {},
+  "missingListCompleteTitle": "Album je popunjen!",
+  "@missingListCompleteTitle": {},
+  "missingListCompleteBody": "Imaš sve sličice. Bravo.",
+  "@missingListCompleteBody": {},
   "settingsScanAutoAdvance": "Automatski nastavi skeniranje",
   "@settingsScanAutoAdvance": {},
   "settingsScanAutoAdvanceSubtitle": "Nastavi skeniranje automatski nakon što je sličica dodata.",
