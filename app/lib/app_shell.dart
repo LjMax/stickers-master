@@ -96,6 +96,9 @@ class _AppShellState extends ConsumerState<AppShell> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final inboxBadge = ref.watch(inboxBadgeCountProvider);
+    // Cap the rendered count so a large number can't overflow the small
+    // circular badge.
+    final badgeLabel = inboxBadge > 99 ? '99+' : '$inboxBadge';
 
     // With 5 destinations, the default labelMedium (~12sp) can wrap on
     // longer Serbian labels like "Podešavanja" on average phone widths.
@@ -120,43 +123,43 @@ class _AppShellState extends ConsumerState<AppShell> {
       bottomNavigationBar: NavigationBarTheme(
         data: navTheme,
         child: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.grid_view_outlined),
-            selectedIcon: const Icon(Icons.grid_view),
-            label: l.tabAlbum,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.bar_chart_outlined),
-            selectedIcon: const Icon(Icons.bar_chart),
-            label: l.tabStats,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.swap_horiz_outlined),
-            selectedIcon: const Icon(Icons.swap_horiz),
-            label: l.tabSwap,
-          ),
-          NavigationDestination(
-            icon: Badge(
-              isLabelVisible: inboxBadge > 0,
-              label: Text('$inboxBadge'),
-              child: const Icon(Icons.chat_bubble_outline),
+          selectedIndex: _index,
+          onDestinationSelected: (i) => setState(() => _index = i),
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.grid_view_outlined),
+              selectedIcon: const Icon(Icons.grid_view),
+              label: l.tabAlbum,
             ),
-            selectedIcon: Badge(
-              isLabelVisible: inboxBadge > 0,
-              label: Text('$inboxBadge'),
-              child: const Icon(Icons.chat_bubble),
+            NavigationDestination(
+              icon: const Icon(Icons.bar_chart_outlined),
+              selectedIcon: const Icon(Icons.bar_chart),
+              label: l.tabStats,
             ),
-            label: l.tabInbox,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.settings_outlined),
-            selectedIcon: const Icon(Icons.settings),
-            label: l.tabSettings,
-          ),
-        ],
+            NavigationDestination(
+              icon: const Icon(Icons.swap_horiz_outlined),
+              selectedIcon: const Icon(Icons.swap_horiz),
+              label: l.tabSwap,
+            ),
+            NavigationDestination(
+              icon: Badge(
+                isLabelVisible: inboxBadge > 0,
+                label: Text(badgeLabel),
+                child: const Icon(Icons.chat_bubble_outline),
+              ),
+              selectedIcon: Badge(
+                isLabelVisible: inboxBadge > 0,
+                label: Text(badgeLabel),
+                child: const Icon(Icons.chat_bubble),
+              ),
+              label: l.tabInbox,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.settings_outlined),
+              selectedIcon: const Icon(Icons.settings),
+              label: l.tabSettings,
+            ),
+          ],
         ),
       ),
     );

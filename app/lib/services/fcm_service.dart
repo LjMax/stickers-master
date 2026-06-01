@@ -31,15 +31,18 @@ class FcmService {
     importance: Importance.high,
   );
 
-  /// Holds the latest token we successfully wrote so we don't churn on
-  /// every Firestore listen tick.
+  /// Holds the latest token we successfully wrote, and the uid we wrote it
+  /// for, so we don't churn on every Firestore listen tick. The uid must be
+  /// part of the guard: after an account switch on one device the device
+  /// token is unchanged, so a token-only check would skip writing the new
+  /// user's token doc and they'd receive no pushes.
   String? _lastWrittenToken;
+  String? _lastWrittenUid;
   StreamSubscription<String>? _refreshSub;
 
   Future<void> init() async {
     // Local notifications init (foreground display + tap routing).
-    const androidInit =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidInit);
     await _local.initialize(
       initSettings,
@@ -82,6 +85,7 @@ class FcmService {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || user.isAnonymous) {
       _lastWrittenToken = null;
+      _lastWrittenUid = null;
       return;
     }
 
@@ -93,12 +97,12 @@ class FcmService {
       return;
     }
     if (token == null || token.isEmpty) return;
-    if (token == _lastWrittenToken) return; // no change
+    if (token == _lastWrittenToken && uid == _lastWrittenUid) {
+      return; // already written for this user
+    }
 
     try {
-      await FirebaseFirestore.instance
-          .doc('users/$uid/private/fcm')
-          .set({
+      await FirebaseFirestore.instance.doc('users/$uid/private/fcm').set({
         'token': token,
         'platform': Platform.isAndroid
             ? 'android'
@@ -108,6 +112,7 @@ class FcmService {
         'updated_at': FieldValue.serverTimestamp(),
       });
       _lastWrittenToken = token;
+      _lastWrittenUid = uid;
     } catch (e) {
       if (kDebugMode) debugPrint('FCM token write failed: $e');
     }
@@ -127,6 +132,7 @@ class FcmService {
           'updated_at': FieldValue.serverTimestamp(),
         });
         _lastWrittenToken = newToken;
+        _lastWrittenUid = current.uid;
       } catch (e) {
         if (kDebugMode) debugPrint('FCM token refresh write failed: $e');
       }
@@ -140,6 +146,7 @@ class FcmService {
       await FirebaseFirestore.instance.doc('users/$uid/private/fcm').delete();
     } catch (_) {/* ignore */}
     _lastWrittenToken = null;
+    _lastWrittenUid = null;
   }
 
   /// Called by Firebase when a push arrives **while the app is foreground**
@@ -166,17 +173,6 @@ class FcmService {
   void _onLocalTap(NotificationResponse resp) {
     final data = _decodePayload(resp.payload);
     if (data != null) NotificationRoute.set(data);
-  }
-
-  String _encodePayload(Map<String, dynamic> data) {
-    final buf = StringBuffer();
-    var first = true;
-    data.forEach((k, v) {
-      if (!first) buf.write('|');
-      buf.write('$k=$v');
-      first = false;
-    });
-    return buf.toString();
   }
 
   Map<String, String>? _decodePayload(String? payload) {

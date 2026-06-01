@@ -75,9 +75,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       );
       Navigator.of(context).pop();
     } catch (e) {
+      debugPrint('profile: save failed: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
+        SnackBar(content: Text(AppLocalizations.of(context).errorGeneric)),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -110,7 +111,10 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
       appBar: AppBar(title: Text(l.profileTitle)),
       body: asyncProfile.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('$e')),
+        error: (e, st) {
+          debugPrint('profile: stream error: $e');
+          return Center(child: Text(l.errorGeneric));
+        },
         data: (profile) {
           _maybeInitFromProfile(profile);
           final avatarUrl = profile?.photoUrl ?? user.photoURL;
@@ -128,7 +132,9 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                           UserAvatar(
                             name: _displayNameCtrl.text.isNotEmpty
                                 ? _displayNameCtrl.text
-                                : (profile?.displayName ?? user.displayName ?? ''),
+                                : (profile?.displayName ??
+                                    user.displayName ??
+                                    ''),
                             photoUrl: avatarUrl,
                             radius: 36,
                           ),
@@ -138,34 +144,42 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                     ),
                     TextFormField(
                       controller: _displayNameCtrl,
+                      maxLength: 40,
                       decoration: InputDecoration(
                         labelText: l.profileDisplayName,
                         helperText: l.profileDisplayNameHint,
                         prefixIcon: const Icon(Icons.person_outline),
+                        counterText: '',
                       ),
                       textCapitalization: TextCapitalization.words,
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? l.profileRequiredField : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? l.profileRequiredField
+                          : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _cityCtrl,
+                      maxLength: 40,
                       decoration: InputDecoration(
                         labelText: l.profileCity,
                         helperText: l.profileCityHint,
                         prefixIcon: const Icon(Icons.location_city_outlined),
+                        counterText: '',
                       ),
                       textCapitalization: TextCapitalization.words,
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? l.profileRequiredField : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? l.profileRequiredField
+                          : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _countryCtrl,
+                      maxLength: 40,
                       decoration: InputDecoration(
                         labelText: l.profileCountry,
                         helperText: l.profileCountryHint,
                         prefixIcon: const Icon(Icons.public_outlined),
+                        counterText: '',
                       ),
                       textCapitalization: TextCapitalization.words,
                       validator: (v) => (v == null || v.trim().isEmpty)

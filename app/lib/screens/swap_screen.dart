@@ -42,11 +42,9 @@ class SwapScreen extends ConsumerWidget {
           const _FilterBar(),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: () async =>
-                  ref.invalidate(currentSwapMatchesProvider),
+              onRefresh: () async => ref.invalidate(currentSwapMatchesProvider),
               child: asyncResult.when(
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
                 // Hide raw Firestore errors from the user (they sometimes
                 // embed project IDs and aren't actionable). Log to console,
                 // render the friendly "no matches" empty state.
@@ -255,7 +253,8 @@ class _MatchCard extends ConsumerWidget {
         SnackBar(content: Text(l.modBlockedSnack(label))),
       );
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      debugPrint('swap: block failed: $e');
+      messenger.showSnackBar(SnackBar(content: Text(l.errorGeneric)));
     }
   }
 
@@ -298,17 +297,16 @@ class _MatchCard extends ConsumerWidget {
                       ),
                       Text(
                         profile.city,
-                        style:
-                            Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: scheme.onSurfaceVariant,
-                                ),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: scheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(16),
@@ -354,8 +352,8 @@ class _MatchCard extends ConsumerWidget {
             Text(
               remaining > 0 ? '$preview, +$remaining' : preview,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
             ),
             const SizedBox(height: 8),
             Row(

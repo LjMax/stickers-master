@@ -80,9 +80,8 @@ class InboxScreen extends ConsumerWidget {
             data: (requests) {
               // Don't show outgoing to someone *I* have blocked — I
               // wouldn't want to chat with them anyway.
-              final visible = requests
-                  .where((r) => !iBlocked.contains(r.toUser))
-                  .toList();
+              final visible =
+                  requests.where((r) => !iBlocked.contains(r.toUser)).toList();
               if (visible.isEmpty) return const SizedBox.shrink();
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,10 +119,9 @@ class InboxScreen extends ConsumerWidget {
                   (pending.valueOrNull ?? const <ChatRequest>[])
                       .where((r) => !blockedAny.contains(r.fromUser))
                       .toList();
-              final visibleSent =
-                  (sent.valueOrNull ?? const <ChatRequest>[])
-                      .where((r) => !iBlocked.contains(r.toUser))
-                      .toList();
+              final visibleSent = (sent.valueOrNull ?? const <ChatRequest>[])
+                  .where((r) => !iBlocked.contains(r.toUser))
+                  .toList();
               if (visibleChats.isEmpty &&
                   visiblePending.isEmpty &&
                   visibleSent.isEmpty) {
@@ -140,7 +138,8 @@ class InboxScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _SectionHeader(label: l.inboxSectionChats),
-                  ...visibleChats.map((c) => _ChatTile(chat: c, myUid: user.uid)),
+                  ...visibleChats
+                      .map((c) => _ChatTile(chat: c, myUid: user.uid)),
                 ],
               );
             },
@@ -192,7 +191,8 @@ class _SentRequestTile extends ConsumerWidget {
         SnackBar(content: Text(l2.sentRequestCancelledSnack)),
       );
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      debugPrint('inbox: cancel request failed: $e');
+      messenger.showSnackBar(SnackBar(content: Text(l2.errorGeneric)));
     }
   }
 
@@ -205,7 +205,8 @@ class _SentRequestTile extends ConsumerWidget {
         SnackBar(content: Text(l.sentRequestDismissedSnack)),
       );
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      debugPrint('inbox: dismiss outgoing failed: $e');
+      messenger.showSnackBar(SnackBar(content: Text(l.errorGeneric)));
     }
   }
 
@@ -317,10 +318,10 @@ class _RequestTileState extends ConsumerState<_RequestTile> {
       // displayName, and any user can override their Google name in
       // Settings → Profile.
       final myProfile = ref.read(myProfileProvider).valueOrNull;
-      final myName = (myProfile != null &&
-              myProfile.displayName.trim().isNotEmpty)
-          ? myProfile.displayName
-          : (user.displayName ?? '');
+      final myName =
+          (myProfile != null && myProfile.displayName.trim().isNotEmpty)
+              ? myProfile.displayName
+              : (user.displayName ?? '');
       final myPhoto = (myProfile?.photoUrl?.isNotEmpty ?? false)
           ? myProfile!.photoUrl
           : user.photoURL;
@@ -341,7 +342,12 @@ class _RequestTileState extends ConsumerState<_RequestTile> {
         ));
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      debugPrint('inbox: accept request failed: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).errorGeneric)),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -353,9 +359,15 @@ class _RequestTileState extends ConsumerState<_RequestTile> {
       await ref.read(chatRepositoryProvider).declineRequest(widget.request.id);
       if (!mounted) return;
       final l = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.inboxRequestDeclined)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l.inboxRequestDeclined)));
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      debugPrint('inbox: decline request failed: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).errorGeneric)),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -439,7 +451,9 @@ class _ChatTile extends ConsumerWidget {
     if (t == null) return '';
     final local = t.toLocal();
     final now = DateTime.now();
-    final sameDay = local.year == now.year && local.month == now.month && local.day == now.day;
+    final sameDay = local.year == now.year &&
+        local.month == now.month &&
+        local.day == now.day;
     return sameDay ? _timeFmt.format(local) : _dateFmt.format(local);
   }
 
@@ -482,8 +496,7 @@ class _ChatTile extends ConsumerWidget {
                 style: TextStyle(color: scheme.error),
               ),
               subtitle: Text(l.chatActionDeleteForeverSubtitle),
-              onTap: () =>
-                  Navigator.of(ctx).pop(_ChatAction.deleteForever),
+              onTap: () => Navigator.of(ctx).pop(_ChatAction.deleteForever),
             ),
             const SizedBox(height: 8),
           ],
@@ -527,7 +540,8 @@ class _ChatTile extends ConsumerWidget {
         SnackBar(content: Text(l2.chatHiddenSnack)),
       );
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      debugPrint('inbox: hide chat failed: $e');
+      messenger.showSnackBar(SnackBar(content: Text(l2.errorGeneric)));
     }
   }
 
@@ -563,7 +577,8 @@ class _ChatTile extends ConsumerWidget {
         SnackBar(content: Text(l2.chatDeletedForeverSnack)),
       );
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      debugPrint('inbox: delete chat failed: $e');
+      messenger.showSnackBar(SnackBar(content: Text(l2.errorGeneric)));
     }
   }
 
@@ -580,9 +595,7 @@ class _ChatTile extends ConsumerWidget {
       leading: UserAvatar(name: otherName, photoUrl: otherPhoto, radius: 20),
       title: Text(
         otherName.isEmpty ? '—' : otherName,
-        style: unread
-            ? const TextStyle(fontWeight: FontWeight.w700)
-            : null,
+        style: unread ? const TextStyle(fontWeight: FontWeight.w700) : null,
       ),
       subtitle: Text(
         lastMsg,

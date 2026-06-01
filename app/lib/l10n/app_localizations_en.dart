@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Stickers Master';
 
   @override
+  String get errorGeneric => 'Something went wrong. Please try again.';
+
+  @override
   String get tabAlbum => 'Album';
 
   @override

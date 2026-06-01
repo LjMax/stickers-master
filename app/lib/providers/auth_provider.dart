@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../services/fcm_service.dart';
+
 /// Streams the currently-signed-in [User] (or `null` if signed out).
 ///
 /// Used by the rest of the app to react to auth state. Anonymous users are
@@ -99,8 +101,18 @@ class AuthService {
         futures.add(user.updatePhotoURL(googlePhoto));
       }
       if (futures.isNotEmpty) {
-        await Future.wait(futures);
-        await user.reload();
+        // Cosmetic profile sync — must never fail the sign-in itself. A
+        // transient network/token error here would otherwise throw out of
+        // signInWithGoogle even though authentication already succeeded.
+        try {
+          await Future.wait(futures);
+          await user.reload();
+        } catch (e) {
+          if (kDebugMode) {
+            debugPrint(
+                'Google profile sync after sign-in failed (non-fatal): $e');
+          }
+        }
       }
     }
 
@@ -120,6 +132,14 @@ class AuthService {
 
   /// Sign out of Firebase and clear the cached Google account.
   Future<void> signOut() async {
+    // Remove this device's push token from the (still-authenticated) account
+    // before dropping the session: the previous user should stop receiving
+    // pushes here, and the next account must re-register cleanly. (Also
+    // resets FcmService's in-memory last-written-token guard.)
+    final uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      await FcmService.instance.clearTokenForUser(uid);
+    }
     await _auth.signOut();
     try {
       await GoogleSignIn().signOut();
@@ -140,6 +160,13 @@ class AuthService {
   /// usable as a guest without needing a restart. Throws on failure — the
   /// caller should surface an error and leave the account intact.
   Future<void> deleteAccount() async {
+    // Delete this device's token doc while we're still authenticated (the
+    // Cloud Function also wipes it server-side, but this resets the local
+    // last-written-token guard so a later sign-in re-registers).
+    final uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      await FcmService.instance.clearTokenForUser(uid);
+    }
     final functions = FirebaseFunctions.instanceFor(region: 'europe-west3');
     await functions.httpsCallable('deleteAccount').call();
 

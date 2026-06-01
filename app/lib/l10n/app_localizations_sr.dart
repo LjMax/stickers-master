@@ -12,6 +12,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get appTitle => 'Stickers Master';
 
   @override
+  String get errorGeneric => 'Došlo je do greške. Pokušajte ponovo.';
+
+  @override
   String get tabAlbum => 'Album';
 
   @override

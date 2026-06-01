@@ -44,6 +44,10 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   }
 
   Future<void> _send(String myUid) async {
+    // Re-entrancy guard: the keyboard's onSubmitted action isn't gated by
+    // the send button's disabled state, so without this a fast double-submit
+    // (tap + Enter) could fire two sends before the first sets _sending.
+    if (_sending) return;
     final text = _inputCtrl.text.trim();
     if (text.isEmpty) return;
     setState(() => _sending = true);
@@ -65,8 +69,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         }
       });
     } catch (e) {
+      debugPrint('chat: send message failed: $e');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).errorGeneric)),
+      );
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -121,7 +128,8 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         SnackBar(content: Text(l.modBlockedSnack(displayName))),
       );
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      debugPrint('chat: block failed: $e');
+      messenger.showSnackBar(SnackBar(content: Text(l.errorGeneric)));
     }
   }
 
@@ -142,7 +150,10 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         SnackBar(content: Text(l.modUnblockedSnack(displayName))),
       );
     } catch (e) {
-      if (mounted) messenger.showSnackBar(SnackBar(content: Text('$e')));
+      debugPrint('chat: unblock failed: $e');
+      if (mounted) {
+        messenger.showSnackBar(SnackBar(content: Text(l.errorGeneric)));
+      }
     }
   }
 
@@ -171,7 +182,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       next.whenData((messages) {
         if (messages.isEmpty || !mounted) return;
         if (messages.last.senderId != user.uid) {
-          ref.read(chatRepositoryProvider).markChatRead(widget.chat.id, user.uid);
+          ref
+              .read(chatRepositoryProvider)
+              .markChatRead(widget.chat.id, user.uid);
         }
       });
     });
@@ -225,8 +238,12 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         children: [
           Expanded(
             child: ref.watch(chatMessagesProvider(widget.chat.id)).when(
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (e, _) => Center(child: Text('$e')),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (e, _) {
+                    debugPrint('chat: messages stream error: $e');
+                    return Center(child: Text(l.errorGeneric));
+                  },
                   data: (messages) => _MessageList(
                     messages: messagesForUser(widget.chat, messages, user.uid),
                     myUid: user.uid,

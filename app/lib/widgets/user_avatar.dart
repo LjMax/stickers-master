@@ -7,11 +7,12 @@ import '../theme/app_theme.dart';
 /// - Treats `null` AND empty-string photo URLs the same way (shows the
 ///   letter fallback) — silently empty URLs from Firebase Auth are a
 ///   common surprise.
-/// - Logs a `debugPrint` when image loading fails (so we can diagnose
-///   "blank circle" cases caused by 403/CORS on Google photo URLs).
+/// - Falls back to the letter — and logs a `debugPrint` — when the image
+///   fails to load (e.g. 403/CORS on Google photo URLs), instead of
+///   leaving a blank coloured circle.
 /// - Renders the first letter of [name] in a coloured circle when no
 ///   image is available.
-class UserAvatar extends StatelessWidget {
+class UserAvatar extends StatefulWidget {
   const UserAvatar({
     super.key,
     required this.name,
@@ -29,32 +30,53 @@ class UserAvatar extends StatelessWidget {
   final Color? foregroundColor;
   final bool foilHighlight;
 
-  bool get _hasPhoto => photoUrl != null && photoUrl!.isNotEmpty;
+  @override
+  State<UserAvatar> createState() => _UserAvatarState();
+}
+
+class _UserAvatarState extends State<UserAvatar> {
+  /// Latched true once a network image fails to load, so we render the
+  /// letter fallback instead of a blank circle. Reset when the URL changes.
+  bool _imageFailed = false;
+
+  bool get _hasPhoto =>
+      widget.photoUrl != null && widget.photoUrl!.isNotEmpty && !_imageFailed;
+
+  @override
+  void didUpdateWidget(UserAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A new URL deserves a fresh attempt — clear the failure latch.
+    if (oldWidget.photoUrl != widget.photoUrl) {
+      _imageFailed = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final bg = backgroundColor ??
-        (foilHighlight
-            ? AppColors.foilGold
-            : scheme.primaryContainer);
-    final fg = foregroundColor ??
-        (foilHighlight ? Colors.white : scheme.onPrimaryContainer);
+    final bg = widget.backgroundColor ??
+        (widget.foilHighlight ? AppColors.foilGold : scheme.primaryContainer);
+    final fg = widget.foregroundColor ??
+        (widget.foilHighlight ? Colors.white : scheme.onPrimaryContainer);
 
-    final letter = name.trim().isEmpty
-        ? '?'
-        : name.trim().characters.first.toUpperCase();
+    final trimmed = widget.name.trim();
+    final letter =
+        trimmed.isEmpty ? '?' : trimmed.characters.first.toUpperCase();
 
     return CircleAvatar(
-      radius: radius,
+      radius: widget.radius,
       backgroundColor: bg,
       foregroundColor: fg,
-      backgroundImage: _hasPhoto ? NetworkImage(photoUrl!) : null,
+      backgroundImage: _hasPhoto ? NetworkImage(widget.photoUrl!) : null,
       onBackgroundImageError: _hasPhoto
           ? (e, st) {
               if (kDebugMode) {
-                debugPrint('UserAvatar: failed to load $photoUrl — $e');
+                debugPrint(
+                  'UserAvatar: failed to load ${widget.photoUrl} — $e',
+                );
               }
+              // Fall back to the letter instead of a blank circle.
+              if (mounted) setState(() => _imageFailed = true);
             }
           : null,
       child: _hasPhoto
@@ -62,7 +84,7 @@ class UserAvatar extends StatelessWidget {
           : Text(
               letter,
               style: TextStyle(
-                fontSize: radius * 0.8,
+                fontSize: widget.radius * 0.8,
                 fontWeight: FontWeight.w700,
               ),
             ),

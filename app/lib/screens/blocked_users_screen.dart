@@ -97,9 +97,10 @@ class _BlockedTileState extends ConsumerState<_BlockedTile> {
         SnackBar(content: Text(l.modUnblockedSnack(displayName))),
       );
     } catch (e) {
+      debugPrint('blocked users: unblock failed: $e');
       if (mounted) {
         setState(() => _busy = false);
-        messenger.showSnackBar(SnackBar(content: Text('$e')));
+        messenger.showSnackBar(SnackBar(content: Text(l.errorGeneric)));
       }
     }
   }

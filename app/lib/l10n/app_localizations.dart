@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'Stickers Master'**
   String get appTitle;
 
+  /// Generic fallback shown when a backend (Firestore) action fails, so raw error strings never reach the user
+  ///
+  /// In sr, this message translates to:
+  /// **'Došlo je do greške. Pokušajte ponovo.'**
+  String get errorGeneric;
+
   /// No description provided for @tabAlbum.
   ///
   /// In sr, this message translates to:

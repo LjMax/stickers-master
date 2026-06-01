@@ -5,6 +5,11 @@
     "description": "Display name of the app"
   },
 
+  "errorGeneric": "Došlo je do greške. Pokušajte ponovo.",
+  "@errorGeneric": {
+    "description": "Generic fallback shown when a backend (Firestore) action fails, so raw error strings never reach the user"
+  },
+
   "tabAlbum": "Album",
   "@tabAlbum": {},
   "tabStats": "Statistika",

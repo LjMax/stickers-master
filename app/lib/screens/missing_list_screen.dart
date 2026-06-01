@@ -26,95 +26,106 @@ class MissingListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final asyncAlbum = ref.watch(albumProvider);
-    final useSerbian =
-        Localizations.localeOf(context).languageCode == 'sr';
+    final useSerbian = Localizations.localeOf(context).languageCode == 'sr';
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l.missingListTitle),
-      ),
-      body: asyncAlbum.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
-        data: (album) {
-          final counts = ref.watch(collectionProvider(album.id));
-          final groups = buildMissingGroups(album, counts);
-          if (groups.isEmpty) {
-            return EmptyState(
-              icon: Icons.emoji_events_outlined,
-              title: l.missingListCompleteTitle,
-              message: l.missingListCompleteBody,
-            );
-          }
+    // Wrap the Scaffold in its own ScaffoldMessenger so the
+    // "Added X · Undo" snackbar from _markFound is scoped to this
+    // screen. Without this, ScaffoldMessenger.of(context) resolves
+    // to the root one MaterialApp installed, and the snackbar
+    // outlives the Navigator pop — it ends up lingering on the
+    // album / stats / inbox tab after the user navigates away.
+    return ScaffoldMessenger(
+      // The Builder gives the body (including the Copy button) a context
+      // *below* this ScaffoldMessenger, so both the Copy and the tap-to-mark
+      // snackbars resolve to the scoped messenger and are torn down with the
+      // route on pop — rather than the root one, where they'd linger on the
+      // tab the user returns to.
+      child: Builder(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(l.missingListTitle),
+          ),
+          body: asyncAlbum.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text('$e')),
+            data: (album) {
+              final counts = ref.watch(collectionProvider(album.id));
+              final groups = buildMissingGroups(album, counts);
+              if (groups.isEmpty) {
+                return EmptyState(
+                  icon: Icons.emoji_events_outlined,
+                  title: l.missingListCompleteTitle,
+                  message: l.missingListCompleteBody,
+                );
+              }
 
-          final totalMissing = groups.fold<int>(
-              0, (sum, g) => sum + g.missingCodes.length);
+              final totalMissing =
+                  groups.fold<int>(0, (sum, g) => sum + g.missingCodes.length);
 
-          return Column(
-            children: [
-              // Summary + Copy button.
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        l.missingListSummary(totalMissing),
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
+              return Column(
+                children: [
+                  // Summary + Copy button.
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            l.missingListSummary(totalMissing),
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                        ),
+                        FilledButton.tonalIcon(
+                          onPressed: () async {
+                            final text = formatMissingAsText(
+                              groups,
+                              useSerbian: useSerbian,
+                            );
+                            await Clipboard.setData(ClipboardData(text: text));
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l.missingListCopied)),
+                            );
+                          },
+                          icon: const Icon(Icons.copy_outlined),
+                          label: Text(l.missingListCopy),
+                        ),
+                      ],
                     ),
-                    FilledButton.tonalIcon(
-                      onPressed: () async {
-                        final text = formatMissingAsText(
-                          groups,
-                          useSerbian: useSerbian,
-                        );
-                        await Clipboard.setData(ClipboardData(text: text));
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l.missingListCopied)),
+                  ),
+                  const Divider(height: 1),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemCount: groups.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 4),
+                      itemBuilder: (context, i) {
+                        final g = groups[i];
+                        final teamName =
+                            useSerbian ? g.teamNameSrLatn : g.teamNameEn;
+                        return _GroupRow(
+                          groupCode: g.groupCode,
+                          teamName: teamName.isEmpty ? g.groupCode : teamName,
+                          codes: g.missingCodes,
+                          // Tapping a code marks it as owned; the list
+                          // recomputes via collectionProvider's stream and
+                          // the chip disappears on the next frame.
+                          onCodeTap: (code) => _markFound(
+                            context: context,
+                            ref: ref,
+                            albumId: album.id,
+                            code: code,
+                            l: l,
+                          ),
                         );
                       },
-                      icon: const Icon(Icons.copy_outlined),
-                      label: Text(l.missingListCopy),
                     ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: groups.length,
-                  separatorBuilder: (_, __) =>
-                      const SizedBox(height: 4),
-                  itemBuilder: (context, i) {
-                    final g = groups[i];
-                    final teamName = useSerbian
-                        ? g.teamNameSrLatn
-                        : g.teamNameEn;
-                    return _GroupRow(
-                      groupCode: g.groupCode,
-                      teamName:
-                          teamName.isEmpty ? g.groupCode : teamName,
-                      codes: g.missingCodes,
-                      // Tapping a code marks it as owned; the list
-                      // recomputes via collectionProvider's stream and
-                      // the chip disappears on the next frame.
-                      onCodeTap: (code) => _markFound(
-                        context: context,
-                        ref: ref,
-                        albumId: album.id,
-                        code: code,
-                        l: l,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

@@ -85,35 +85,36 @@ class _SendRequestSheetState extends ConsumerState<_SendRequestSheet> {
       // The swap profile is the publicly-visible identity in this app, so
       // it's what other users should see on the request.
       final myProfile = ref.read(myProfileProvider).valueOrNull;
-      final myName = (myProfile != null &&
-              myProfile.displayName.trim().isNotEmpty)
-          ? myProfile.displayName
-          : (user.displayName ?? '');
+      final myName =
+          (myProfile != null && myProfile.displayName.trim().isNotEmpty)
+              ? myProfile.displayName
+              : (user.displayName ?? '');
       final myPhoto = (myProfile?.photoUrl?.isNotEmpty ?? false)
           ? myProfile!.photoUrl
           : user.photoURL;
 
       await repo.sendRequest(
-            fromUid: user.uid,
-            fromDisplayName: myName,
-            fromPhotoUrl: myPhoto,
-            toUid: widget.toProfile.uid,
-            // Denormalise recipient info so the sender's own "Sent"
-            // inbox section can render without an extra profile fetch.
-            toDisplayName: widget.toProfile.displayName,
-            toPhotoUrl: widget.toProfile.photoUrl,
-            albumId: widget.albumId,
-            introMessage: text,
-          );
+        fromUid: user.uid,
+        fromDisplayName: myName,
+        fromPhotoUrl: myPhoto,
+        toUid: widget.toProfile.uid,
+        // Denormalise recipient info so the sender's own "Sent"
+        // inbox section can render without an extra profile fetch.
+        toDisplayName: widget.toProfile.displayName,
+        toPhotoUrl: widget.toProfile.photoUrl,
+        albumId: widget.albumId,
+        introMessage: text,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l.requestSent)),
       );
       Navigator.of(context).pop();
     } catch (e) {
+      debugPrint('chat: send request failed: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
+        SnackBar(content: Text(l.errorGeneric)),
       );
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -179,7 +180,8 @@ class _SendRequestSheetState extends ConsumerState<_SendRequestSheet> {
               ),
               const Spacer(),
               FilledButton.icon(
-                onPressed: (_sending || _ctrl.text.trim().isEmpty) ? null : _send,
+                onPressed:
+                    (_sending || _ctrl.text.trim().isEmpty) ? null : _send,
                 icon: _sending
                     ? const SizedBox(
                         width: 18,

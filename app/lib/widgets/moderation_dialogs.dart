@@ -117,9 +117,10 @@ class _ReportDialogState extends ConsumerState<_ReportDialog> {
       Navigator.of(context).pop();
       messenger.showSnackBar(SnackBar(content: Text(l.modReportSentSnack)));
     } catch (e) {
+      debugPrint('moderation: report submit failed: $e');
       if (!mounted) return;
       setState(() => _submitting = false);
-      messenger.showSnackBar(SnackBar(content: Text('$e')));
+      messenger.showSnackBar(SnackBar(content: Text(l.errorGeneric)));
     }
   }
 
